@@ -1,0 +1,451 @@
+---
+description: Development conventions and naming rules
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Development Conventions
+
+Always follow:
+
+- docs/03-development-conventions.md
+
+Consistency is more important than personal preference.
+
+---
+
+# Language-Specific Naming
+
+## C# (Backend)
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Class, record, interface, enum | PascalCase | `CreateUserHandler`, `IUserRepository` |
+| Method | PascalCase | `ExecuteAsync`, `FindById` |
+| Property | PascalCase | `FullName`, `CreatedAt` |
+| Private field | `_camelCase` | `_userRepository` |
+| Parameter, local variable | camelCase | `userId`, `input` |
+| File name | PascalCase (matches type) | `CreateUserHandler.cs` |
+| Namespace | PascalCase | `Template.Core.Features.Users` |
+
+## TypeScript (Frontend)
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Component, type, interface | PascalCase | `UserForm`, `CreateUserInput` |
+| Function, variable, hook | camelCase | `useUsers`, `createUser` |
+| File name (component) | PascalCase | `UserForm.tsx` |
+| File name (non-component) | camelCase | `userApi.ts`, `createUserSchema.ts` |
+| Constant (true constant) | UPPER_SNAKE_CASE | `API_BASE_URL` |
+
+---
+
+# Backend File Naming
+
+C# files use **PascalCase** matching the primary type:
+
+```
+CreateUserHandler.cs
+CreateUserCommand.cs
+UserRepository.cs
+UsersController.cs
+IUserRepository.cs
+```
+
+Never use:
+
+```
+create-user-handler.cs
+user_repository.cs
+```
+
+---
+
+# Frontend File Naming
+
+React components:
+
+```
+UserForm.tsx
+UsersPage.tsx
+CreateUserDialog.tsx
+```
+
+Non-component files:
+
+```
+userApi.ts
+useUsers.ts
+createUserSchema.ts
+user.ts
+```
+
+---
+
+# Component Naming (Frontend)
+
+Components must use **PascalCase**:
+
+```
+UserForm
+UserTable
+CreateUserDialog
+```
+
+Export:
+
+```tsx
+export function UserForm() { ... }
+```
+
+---
+
+# Controller Naming (Backend)
+
+Pattern:
+
+```
+{Entity}Controller
+```
+
+Examples:
+
+```
+UsersController
+ContractsController
+RolesController
+```
+
+Location:
+
+```
+Template.API/CoreFeatures/{FeatureName}/{Entity}Controller.cs
+```
+
+Responsibilities:
+
+- Bind HTTP request to command/query
+- Call handler
+- Return typed response
+
+Never place business logic inside controllers.
+
+---
+
+# Handler / Use Case Naming (Backend)
+
+Pattern:
+
+```
+{Verb}{Entity}Handler
+```
+
+Examples:
+
+```
+CreateUserHandler
+UpdateContractHandler
+DeleteAssetHandler
+```
+
+Command/query types:
+
+```
+CreateUserCommand
+GetUserByIdQuery
+```
+
+Handlers are the only place where business logic should exist on the backend.
+
+---
+
+# Repository Naming (Backend)
+
+Interface (Core):
+
+```
+I{Entity}Repository
+```
+
+Implementation (Infrastructure):
+
+```
+{Entity}Repository
+```
+
+Examples:
+
+```
+IUserRepository
+UserRepository
+```
+
+Repositories handle:
+
+- Select
+- Insert
+- Update
+- Delete
+
+Repositories must not contain:
+
+- Business rules
+- Domain calculations
+
+---
+
+# API Client Naming (Frontend)
+
+Pattern:
+
+```
+{entity}Api
+```
+
+Examples:
+
+```
+userApi.ts
+contractApi.ts
+```
+
+Functions use **camelCase**:
+
+```
+getUsers()
+createUser(input)
+updateUser(id, input)
+deleteUser(id)
+```
+
+---
+
+# Hook Naming (Frontend)
+
+Pattern:
+
+```
+use{Entities}
+use{Verb}{Entity}
+```
+
+Examples:
+
+```
+useUsers
+useCreateUser
+useUpdateUser
+```
+
+Files:
+
+```
+useUsers.ts
+useCreateUser.ts
+```
+
+Hooks are responsible for:
+
+- State management
+- Data fetching
+- Calling API client
+- Returning data to pages/components
+
+Hooks must not:
+
+- Contain business logic
+- Access the database directly
+
+---
+
+# Schema Naming (Frontend)
+
+Pattern:
+
+```
+{action}{Entity}Schema
+```
+
+Examples:
+
+```
+createUserSchema
+updateUserSchema
+createContractSchema
+```
+
+Use **Zod** for client-side validation.
+
+Validation must not be duplicated inside components.
+
+---
+
+# Type Naming
+
+## Domain Entities (Backend — C#)
+
+```
+User
+Role
+Contract
+Tenant
+```
+
+## Input Types
+
+**Backend:**
+
+```
+CreateUserCommand
+UpdateUserCommand
+```
+
+**Frontend:**
+
+```
+CreateUserInput
+UpdateUserInput
+```
+
+## DTO / Response Types
+
+```
+UserDto
+UserResponse
+```
+
+Only create DTOs when mapping is actually required.
+
+---
+
+# Import Convention
+
+## Frontend
+
+Prefer alias imports:
+
+```ts
+import { UserForm } from "@/features/user/components/UserForm";
+import { DataTable } from "@/shared/components/DataTable";
+```
+
+Avoid deep relative imports:
+
+```ts
+../../../../components
+```
+
+## Backend
+
+Use file-scoped namespaces and project references:
+
+```
+Template.API → Template.Core
+Template.Infrastructure → Template.Core
+```
+
+Never reference Infrastructure from Core.
+
+---
+
+# Component Rules (Frontend)
+
+A component should have one responsibility.
+
+If a component becomes too large, split it into smaller components.
+
+Default to presentational components; keep data fetching in hooks.
+
+---
+
+# Function Rules
+
+A function should do one thing.
+
+If a function exceeds roughly **50 lines**, consider extracting smaller functions.
+
+---
+
+# Comment Rules
+
+Avoid obvious comments.
+
+Bad:
+
+```csharp
+// Create user
+var user = ...
+```
+
+Use comments only when:
+
+- Explaining business rules
+- Explaining external integrations
+- Explaining complex workflows
+
+---
+
+# Validation Rules
+
+**Frontend:** validation belongs in `schemas/` (Zod).
+
+**Backend:** validation belongs in handlers or FluentValidation validators colocated with the feature slice.
+
+Do not write validation directly inside:
+
+- Components
+- Pages
+- Controllers (beyond model binding)
+
+---
+
+# Shared Code Rules
+
+**Frontend reusable code:** `frontend/src/shared/`
+
+**Backend shared abstractions:** `Template.Core/Common/`
+
+Do not place business-specific code in shared layers.
+
+---
+
+# Infrastructure Service Rules
+
+External adapters belong in:
+
+`Template.Infrastructure/`
+
+Examples:
+
+```
+EmailService
+StorageService
+AiService
+AuthProvider
+```
+
+Do not create:
+
+```
+UserService
+ContractService
+TenantService
+```
+
+for business logic. Use handlers in `Template.Core/Features/` instead.
+
+---
+
+# Consistency Rule
+
+When generating new code:
+
+1. Follow existing naming patterns per language (PascalCase for C#, camelCase for TS functions).
+2. Follow existing folder structure.
+3. Reuse existing abstractions.
+4. Do not introduce alternative patterns unless explicitly requested.
+
+Prefer consistency over creativity.

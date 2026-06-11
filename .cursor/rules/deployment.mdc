@@ -1,0 +1,284 @@
+---
+description: Deployment architecture and infrastructure rules
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Deployment Rules
+
+Follow:
+
+- `docs/13-deployment.md`
+
+---
+
+# Primary Deployment Strategy
+
+Default deployment path:
+
+- frontend → Vercel or Netlify
+- backend → Render.com or Railway via Docker
+
+Clone → Configure Env → Deploy
+
+---
+
+# Primary Deployment Targets
+
+## Frontend
+
+Preferred targets:
+
+- Vercel
+- Netlify
+
+These targets are well suited for React Vite SPA deployments and static hosting.
+
+## Backend
+
+Preferred targets:
+
+- Render.com
+- Railway
+
+Backend is deployed as a .NET 9 Web API container.
+
+---
+
+# Backend Deployment Model
+
+Backend must be deployable as a containerized ASP.NET Core application.
+
+Rules:
+
+- use a standard multi-stage production Dockerfile
+- expose the HTTP port expected by the hosting platform
+- keep business logic out of container-specific code
+- use environment variables for runtime configuration
+
+---
+
+# Standard Multi-Stage Dockerfile
+
+Recommended production Dockerfile for `.NET 9 Web API`:
+
+```dockerfile
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY ["Template.sln", "."]
+COPY ["backend/Template.API/Template.API.csproj", "backend/Template.API/"]
+COPY ["backend/Template.Core/Template.Core.csproj", "backend/Template.Core/"]
+COPY ["backend/Template.Infrastructure/Template.Infrastructure.csproj", "backend/Template.Infrastructure/"]
+RUN dotnet restore "backend/Template.API/Template.API.csproj"
+
+COPY . .
+WORKDIR /src/backend/Template.API
+RUN dotnet publish "Template.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+WORKDIR /app
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "Template.API.dll"]
+```
+
+Rules:
+
+- use a build stage and a runtime stage
+- publish in Release mode
+- avoid shipping the SDK image to production
+- configure ports through environment variables when possible
+
+---
+
+# Environment Driven Deployment
+
+Deployment configuration must come from environment variables.
+
+Never hardcode:
+
+- URLs
+- secrets
+- API keys
+- database connections
+- provider credentials
+- feature flags
+
+---
+
+# Stateless Application Rule
+
+Application must be stateless.
+
+Do not store business state in local memory or local filesystem.
+
+Persistent data belongs to:
+
+- database
+- storage provider
+- auth provider
+
+---
+
+# Database Rule
+
+Supported database:
+
+- PostgreSQL
+
+Application must not create databases automatically.
+
+Database provisioning is external.
+
+Migration workflow:
+
+```text
+migrate
+↓
+seed (development only)
+```
+
+Do not seed before migrations.
+Do not seed production unless explicitly intended.
+
+---
+
+# Frontend Deployment Strategy
+
+Frontend build is produced by Vite and deployed as a static SPA.
+
+Rules:
+
+- Vite builds the production assets
+- frontend can be hosted on Vercel or Netlify
+- public environment variables must use `VITE_` prefix
+- frontend must call the backend API through a configurable base URL
+
+---
+
+# Production Restrictions
+
+Production must not use:
+
+- stub auth
+- debug secrets
+- unsafe defaults
+
+Fail fast if detected.
+
+---
+
+# Secrets Rule
+
+Never:
+
+- commit secrets
+- log secrets
+- expose secrets to frontend
+
+Sensitive values include:
+
+- `DATABASE_URL`
+- `AUTH_SECRET`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- API keys
+- tokens
+- passwords
+
+Manage secrets via platform environment variables in production.
+
+---
+
+# Logging Rule
+
+Use structured logging in production.
+
+Do not log sensitive information.
+
+Platform runtime logs are sufficient for the current project stage.
+
+---
+
+# Health Check Rule
+
+Backend should expose:
+
+- `/health`
+
+Use it to verify application startup and database connectivity when available.
+
+---
+
+# Deployment Checklist Rule
+
+Before deployment ensure:
+
+- environment variables are configured on the hosting platform
+- database is reachable
+- type checks pass
+- migrations are reviewed and ready
+- `AUTH_PROVIDER` or equivalent auth mode is valid for production
+- feature flags are correct for the target environment
+
+After deployment:
+
+- verify frontend loads
+- verify backend connectivity
+- verify authentication
+- verify core feature flags
+
+---
+
+# Future Deployment Targets
+
+Optional targets, not first-class by default:
+
+- Docker Compose
+- VPS
+- Cloud Run
+
+Do not optimize architecture for these unless explicitly requested.
+
+---
+
+# Infrastructure Separation
+
+Business logic must not depend on:
+
+- hosting provider
+- deployment platform
+- container runtime
+
+Infrastructure adapters belong in `backend/Template.Infrastructure/`.
+
+---
+
+# Zero-Cost Deployment Guidance
+
+For low or zero-cost hosting, prefer:
+
+- frontend: Vercel or Netlify free tier
+- backend: Render free tier or Railway trial / low-cost container hosting
+- database: hosted PostgreSQL with a free tier or shared dev instance
+
+The deployment model should remain portable if the hosting provider changes.
+
+---
+
+# Goal
+
+Deployment architecture must be:
+
+- fast to ship
+- provider friendly
+- environment driven
+- solo developer friendly
+- repeatable across customer projects
+- portable between hosting providers

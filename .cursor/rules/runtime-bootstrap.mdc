@@ -1,0 +1,324 @@
+---
+description: Runtime bootstrap architecture rules
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Runtime Bootstrap Rules
+
+Follow:
+
+- `docs/11-runtime-bootstrap.md`
+
+---
+
+# Current Template State
+
+The template is a .NET 9 Web API + React Vite SPA foundation.
+
+Current runtime support covers:
+
+- backend startup composition
+- database tooling
+- configuration validation
+- frontend bootstrap via Vite
+
+The bootstrap order must already be designed correctly even if some runtime features are still being implemented.
+
+---
+
+# Bootstrap Order
+
+Application startup must follow:
+
+```
+Environment
+↓
+Config
+↓
+Database
+↓
+Auth
+↓
+Application
+```
+
+Do not bypass this order.
+
+---
+
+# Backend Bootstrap
+
+## ASP.NET Core Entry Point
+
+Backend bootstrapping happens in `Program.cs` inside `backend/Template.API/`.
+
+`Program.cs` must:
+
+1. load and validate configuration
+2. register dependencies in the DI container
+3. configure database and infrastructure services
+4. configure authentication and authorization
+5. map controllers and middleware
+6. start the application host
+
+### Recommended flow
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAppConfiguration(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddAuthenticationServices(builder.Configuration);
+builder.Services.AddAuthorizationServices();
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+app.UseExceptionHandler();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+```
+
+### DI Rules
+
+- register service lifetimes in `Program.cs` or extension methods called from `Program.cs`
+- keep the composition root thin
+- avoid business logic in startup code
+- keep environment validation fail-fast
+
+---
+
+# Frontend Bootstrap
+
+## Vite Entry Point
+
+Frontend bootstrapping happens in `frontend/src/app/main.tsx`.
+
+`main.tsx` must:
+
+1. load app configuration from Vite environment variables
+2. create the React root
+3. register global providers
+4. mount the router
+5. start the SPA
+
+### Recommended flow
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { App } from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+### React Runtime Rules
+
+- use Vite as the SPA bundler
+- use React Router for client-side routing
+- register global providers at the app shell level
+- keep feature logic out of `main.tsx`
+
+---
+
+# Runtime Layers
+
+Backend structure:
+
+```
+backend/
+├── Template.Core/
+├── Template.Infrastructure/
+└── Template.API/
+```
+
+Frontend structure:
+
+```
+frontend/
+└── src/
+    ├── app/
+    ├── features/
+    ├── shared/
+    ├── lib/
+    └── types/
+```
+
+Database lives at the project root:
+
+```
+database/
+```
+
+---
+
+# Infrastructure Rule
+
+Infrastructure belongs in:
+
+- `backend/Template.Infrastructure/`
+- `backend/Template.API/` for composition and HTTP entry concerns only
+
+Examples:
+
+- auth
+- storage
+- email
+- cache
+- logging
+
+Infrastructure may depend on:
+
+- config
+- shared
+
+Infrastructure must not depend on:
+
+- business modules
+- UI components
+- pages
+
+---
+
+# Shared Rule
+
+Shared code belongs in:
+
+- `frontend/src/shared/`
+- `backend/Template.Core/Common/`
+
+Examples:
+
+- config
+- constants
+- types
+- utils
+- hooks
+
+Shared must not depend on:
+
+- modules
+- pages
+- business logic
+
+---
+
+# Database Initialization
+
+Database connection must be initialized once.
+
+Backend database bootstrap is consumed by `Program.cs` through DI-registered infrastructure services.
+
+Rules:
+
+- reuse a single connection pool / DbContext factory as appropriate
+- do not create new connections per request
+- keep schema, migrations, and seeds at project root `database/`
+
+---
+
+# Authentication Initialization
+
+Authentication must be initialized through configuration.
+
+Backend auth is wired in `Program.cs` through DI.
+Frontend auth is wired in the SPA shell via providers and API interceptors.
+
+Do not hardcode provider selection.
+
+---
+
+# Runtime Modes
+
+Supported:
+
+- development
+- test
+- production
+
+Use `ASPNETCORE_ENVIRONMENT` on the backend and `import.meta.env.MODE` / `NODE_ENV` on the frontend for runtime behavior.
+
+---
+
+# Production Restrictions
+
+Production must not use:
+
+- stub auth
+- debug secrets
+- unsafe defaults
+
+Bootstrap must fail fast if production configuration is invalid.
+
+---
+
+# Error Handling
+
+Bootstrap failures must fail fast.
+
+Examples:
+
+- missing `DATABASE_URL`
+- missing `AUTH_SECRET`
+- invalid `AUTH_PROVIDER`
+- invalid environment mode
+- invalid feature flag configuration
+
+Never silently ignore bootstrap errors.
+
+---
+
+# Dependency Direction
+
+Allowed:
+
+```
+Config
+↓
+Infrastructure
+↓
+Modules
+↓
+Application
+```
+
+Avoid circular dependencies.
+
+---
+
+# Deployment Targets
+
+Primary targets:
+
+- frontend: Vercel or Netlify
+- backend: Render.com or Railway via Docker
+
+Future targets (not first-class yet):
+
+- VPS
+- Cloud Run
+
+Do not write platform-specific business logic.
+
+---
+
+# Goal
+
+Runtime must be:
+
+- predictable
+- portable
+- environment driven
+- easy to deploy
+- easy to maintain

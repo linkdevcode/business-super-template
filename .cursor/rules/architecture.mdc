@@ -1,0 +1,277 @@
+---
+description: System architecture rules
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Architecture Rules
+
+You are working in the My Super Template project.
+
+Always follow the architecture described in:
+
+- docs/00-vision.md
+- docs/01-architecture.md (canonical)
+- docs/02-project-structure.md
+- docs/03-development-conventions.md
+
+---
+
+# Stack Overview
+
+**Backend:** .NET 9 Web API — Hybrid Layered + Vertical Slice Architecture
+
+**Frontend:** React SPA (Vite) — client-side routing, feature-based structure
+
+**Database:** PostgreSQL
+
+---
+
+# Solution Structure
+
+Three backend projects:
+
+| Project | Responsibility |
+|---------|----------------|
+| `Template.Core` | Domain entities, application logic (handlers/use cases), interfaces, contracts |
+| `Template.Infrastructure` | Persistence, repository implementations, external service adapters |
+| `Template.API` | HTTP entry point, controllers, middleware, DI composition |
+
+---
+
+# Tenant Model
+
+Current architecture:
+
+One Customer = One Database
+
+No `organization_id`. No `organizations` table.
+
+Future multi-tenant in a single database is out of current scope.
+
+---
+
+# Architectural Flow
+
+## Backend (Business Features)
+
+Always follow:
+
+```
+Controller (Template.API)
+→ Handler / Use Case (Template.Core)
+→ Repository Interface (Template.Core)
+→ Repository Implementation (Template.Infrastructure)
+→ Database
+```
+
+Controllers live in `Template.API/CoreFeatures/{FeatureName}/`.
+
+Application logic lives in `Template.Core/Features/{FeatureName}/`.
+
+---
+
+## Frontend (Business Features)
+
+Always follow:
+
+```
+Page / Component
+→ Hook
+→ API Client
+→ Backend API
+```
+
+Feature code lives in `src/features/{feature-name}/`.
+
+---
+
+## Auth Feature (Platform Exception)
+
+Auth is a **platform feature** — not a standard business feature slice.
+
+**Backend:**
+
+- Controllers: `Template.API/CoreFeatures/Auth/`
+- Orchestration: `Template.Core/Features/Auth/`
+- Provider implementations: `Template.Infrastructure/Auth/`
+
+**Frontend:**
+
+- `src/features/auth/` — pages, hooks, components, API client
+
+Auth must not depend directly on a specific provider implementation in Core.
+
+---
+
+# Layer Responsibilities
+
+## API Layer (Template.API)
+
+Allowed:
+
+- HTTP routing and request/response mapping
+- Input binding and response formatting
+- Calling handlers / use cases
+- Authorization attributes and filters
+
+Forbidden:
+
+- Business logic
+- Direct database access
+- Direct external service calls
+
+---
+
+## Application Layer (Template.Core)
+
+Allowed:
+
+- Business rules and validation
+- Command/query handlers (use cases)
+- Repository and service interfaces
+- Domain entities and value objects
+
+Forbidden:
+
+- HTTP concerns
+- EF Core or database driver code
+- Direct external SDK calls
+
+This is the only place where business logic should exist.
+
+---
+
+## Infrastructure Layer (Template.Infrastructure)
+
+Allowed:
+
+- Repository implementations
+- EF Core DbContext, configurations, migrations
+- External service adapters (email, storage, AI, auth providers)
+
+Forbidden:
+
+- Business rules
+- Domain calculations
+- HTTP/controller logic
+
+---
+
+## Page / Component Layer (Frontend)
+
+Allowed:
+
+- Render UI
+- Handle user interaction
+- Display data
+
+Forbidden:
+
+- Business logic
+- Direct database access
+
+---
+
+## Hook Layer (Frontend)
+
+Allowed:
+
+- State management
+- Data fetching via API client
+- Mutation orchestration
+- Loading / error state
+
+Forbidden:
+
+- Business logic
+- Direct database access
+
+---
+
+# Database Access
+
+Never query the database directly from:
+
+- Controllers
+- Frontend pages, components, or hooks
+
+Always go through:
+
+```
+Repository Interface (Core) → Repository Implementation (Infrastructure)
+```
+
+---
+
+# Infrastructure Rule
+
+External services must be accessed through:
+
+`Template.Infrastructure/`
+
+Examples:
+
+- Auth providers (`Template.Infrastructure/Auth/`)
+- Email
+- Storage
+- AI
+
+Never access external services directly from:
+
+- `Template.API` controllers (except through injected abstractions)
+- Frontend UI (except through the backend API)
+
+---
+
+# Business Logic Rule
+
+Business logic is only allowed inside:
+
+`Template.Core/Features/{FeatureName}/`
+
+Never place business logic inside:
+
+- Controllers
+- Repositories
+- Frontend components, pages, or hooks
+
+Never create `Services/` folders inside business feature slices for domain logic. Use handlers / use cases instead.
+
+---
+
+# Dependency Rule
+
+Allowed:
+
+```
+API → Core
+Infrastructure → Core
+Frontend Hook → API Client → Backend API
+```
+
+Forbidden:
+
+```
+Core → Infrastructure
+Core → API
+Infrastructure → API (except via DI registration)
+Repository → Controller
+Frontend → Database
+```
+
+---
+
+# Code Generation Rule
+
+When generating new features:
+
+1. Create the vertical slice structure in all three backend projects and the frontend feature folder.
+2. Follow existing architecture and naming conventions.
+3. Reuse shared components and abstractions when available.
+4. Avoid creating new patterns if an existing pattern already exists.
+
+Consistency is more important than creativity.

@@ -1,0 +1,283 @@
+---
+description: Database design standards
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Database Rules
+
+Use PostgreSQL conventions.
+Design schemas for maintainability, consistency, and scalability.
+
+---
+
+# Deployment Model
+
+Current architecture:
+
+One Customer = One Database.
+
+Tenant isolation is achieved through separate databases, not `organization_id`.
+
+Current scope:
+
+- No `organization_id` on any table
+- No `organizations` table
+- Future multi-tenant-in-one-database support is out of scope
+
+Do not add `organization_id` to new tables unless explicitly requested.
+
+---
+
+# Naming Convention
+
+All tables use `snake_case` and plural names.
+
+Examples:
+
+- `users`
+- `roles`
+- `permissions`
+- `audit_logs`
+- `role_permissions`
+
+All columns use `snake_case`.
+
+Examples:
+
+- `created_at`
+- `updated_at`
+- `user_id`
+- `last_login_at`
+
+---
+
+# Primary Key Convention
+
+Every table must contain:
+
+- `id`
+
+Type:
+
+- `uuid`
+
+Never use integer-based primary keys such as `integer`, `serial`, or `bigint`.
+
+---
+
+# Timestamp Convention
+
+Every table must contain:
+
+- `created_at`
+- `updated_at`
+
+Use `NOT NULL` by default.
+
+---
+
+# Foreign Key Convention
+
+Use `<entity>_id` for foreign keys.
+
+Examples:
+
+- `user_id`
+- `role_id`
+- `permission_id`
+- `contract_id`
+
+Create indexes for all foreign keys.
+
+---
+
+# Soft Delete Convention
+
+Prefer `deleted_at` for business entities.
+
+Examples:
+
+- `users`
+- `contracts`
+- `assets`
+- `customers`
+
+Soft delete must be represented in EF Core through a shared `ISoftDelete` contract and global query filters.
+
+---
+
+# Status Convention
+
+Prefer `status` instead of multiple boolean flags.
+
+Good values:
+
+- `ACTIVE`
+- `INACTIVE`
+- `PENDING`
+- `APPROVED`
+- `REJECTED`
+
+Bad:
+
+- `is_active`
+- `is_verified`
+- `is_approved`
+- `is_closed`
+
+---
+
+# Enum Convention
+
+Prefer application-level constants.
+Avoid PostgreSQL enums unless explicitly required.
+
+---
+
+# Unique Constraints
+
+Use unique constraints where appropriate.
+
+Examples:
+
+- `users.email`
+- `permissions.key`
+- `roles.name`
+
+---
+
+# Index Convention
+
+Create indexes for:
+
+- Foreign keys
+- Email
+- Status
+- Frequently queried columns
+
+---
+
+# Nullability Rule
+
+Columns should be `NOT NULL` by default.
+Allow `NULL` only when the value is truly optional.
+
+---
+
+# File Storage Rule
+
+Do not store files inside database tables.
+Store files in a storage provider.
+Store only metadata:
+
+- `file_url`
+- `file_name`
+- `file_size`
+
+---
+
+# Audit Log Convention
+
+Audit logs should contain:
+
+- `id`
+- `entity_type`
+- `entity_id`
+- `action`
+- `changes`
+- `created_by`
+- `created_at`
+
+---
+
+# Permission Convention
+
+Permissions must be stored as records.
+
+Examples:
+
+- `user:create`
+- `user:update`
+- `user:delete`
+- `contract:approve`
+- `asset:update`
+
+Do not hardcode permissions inside UI.
+
+---
+
+# Repository Rule
+
+Database access must happen through repositories.
+
+Never query database directly from:
+
+- Components
+- Pages
+- Hooks
+
+Repository read operations should prefer `AsNoTracking()`.
+Repository paging should be server-side and based on `IQueryable`.
+
+---
+
+# EF Core Rule
+
+Database schema and mapping must be defined with EF Core Fluent API in `Template.Infrastructure`.
+
+Rules:
+
+- Do not use data annotations on core entities
+- Keep persistence concerns out of `Template.Core`
+- Define entity configurations in Infrastructure
+- Use global query filters for soft delete
+- Map `deleted_at` through `ISoftDelete`
+
+---
+
+# Migration Rule
+
+Every schema change must be created through migrations.
+
+Never modify production schema manually.
+
+---
+
+# System Settings Rule
+
+Use a single `system_settings` table for application configuration.
+Store the payload in a JSONB column.
+
+Recommended shape:
+
+- `id` (uuid)
+- `code` (unique identifier for the settings record)
+- `settings` (JSONB payload)
+- `created_at`
+- `updated_at`
+
+Use this table for singleton or grouped system configuration instead of splitting settings across multiple tables.
+
+---
+
+# Database Generation Rules
+
+When generating new tables:
+
+1. Use uuid primary keys.
+2. Use snake_case.
+3. Use plural table names.
+4. Include timestamps.
+5. Use consistent foreign keys.
+6. Prefer NOT NULL.
+7. Create indexes where appropriate.
+8. Support audit logging where needed.
+9. Follow PostgreSQL best practices.
+10. Follow repository pattern.
+11. Keep EF Core mapping in Infrastructure only.
+
+Consistency is more important than optimization.

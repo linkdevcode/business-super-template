@@ -1,0 +1,222 @@
+---
+description: Authentication and authorization rules
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Authentication Rules
+
+Follow:
+
+- `docs/07-authentication.md`
+- `docs/10-auth-module.md`
+
+---
+
+# Architecture vs Implementation
+
+Architecture: custom JWT authentication with refresh tokens.
+
+Implementation detail: authentication is handled by a dedicated `IdentityService` that talks to Supabase Postgres.
+
+Backend auth must be split across the .NET layers:
+
+- `backend/Template.API/CoreFeatures/Auth/`
+- `backend/Template.Core/Features/Auth/`
+- `backend/Template.Infrastructure/Auth/`
+
+Frontend auth must live in:
+
+- `frontend/src/features/auth/`
+
+Auth module code must not depend on any provider-specific SDK directly.
+
+---
+
+# Authentication Strategy
+
+The default authentication mechanism is:
+
+- JWT access token
+- refresh token rotation
+- server-side token validation
+- identity persistence in Supabase Postgres
+
+Authentication must remain provider-agnostic at the module boundary.
+
+Do not scatter auth provider logic across business modules.
+
+---
+
+# Identity Service
+
+`IdentityService` is responsible for:
+
+- verifying credentials
+- issuing JWT access tokens
+- issuing refresh tokens
+- rotating refresh tokens
+- revoking sessions
+- resolving current user claims
+- bridging application identity with Supabase Postgres
+
+`IdentityService` must be the only place that knows the authentication persistence details.
+
+---
+
+# User Source
+
+Business user data must come from the `users` table.
+
+Do not create duplicate user models for auth and business logic.
+
+---
+
+# Field Mapping
+
+Map snake_case database fields to camelCase application fields at the boundary layer.
+
+Example:
+
+- `full_name` → `AuthUser.fullName`
+
+Do not expose database naming conventions to UI types.
+
+---
+
+# Current User
+
+Always use centralized utilities.
+
+Preferred helpers:
+
+- `getCurrentUser()`
+- `requireAuth()`
+- `requirePermission()`
+- `hasPermission()`
+- `hasRole()`
+
+---
+
+# Authorization Strategy
+
+Use RBAC.
+
+User
+↓
+Role
+↓
+Permission
+
+Never authorize by role name directly.
+
+Bad:
+
+- `if (user.role === "Admin")`
+
+Good:
+
+- `hasPermission("User.Create")`
+- `hasPermission("User.Read")`
+
+---
+
+# Route Protection
+
+Routes must be categorized as:
+
+- Public
+- Protected
+- Permission Protected
+
+Permission protected routes must verify permission on the server.
+
+---
+
+# Backend Authorization
+
+Permission validation must happen on the server.
+
+Frontend permission checks are for UX only.
+
+Never trust frontend authorization.
+
+---
+
+# Permission Attributes
+
+Backend endpoints should use permission attributes such as:
+
+- `[HasPermission("User.Read")]`
+- `[HasPermission("User.Create")]`
+- `[HasPermission("AuditLog.View")]`
+
+Dynamic permission strings are allowed and should be treated as the source of truth for authorization checks.
+
+Use PascalCase dot format for permission keys.
+
+---
+
+# Frontend Guard
+
+Frontend must use a reusable React guard component:
+
+- `<HasPermission />`
+
+The guard may hide or render UI based on permission checks, but it must not replace server-side authorization.
+
+---
+
+# Axios Interceptors
+
+Frontend API clients must use Axios interceptors to handle:
+
+- attaching access tokens
+- refreshing expired access tokens
+- replaying the failed request after token rotation
+- clearing auth state when refresh fails
+
+Token rotation must be seamless from the user perspective.
+
+---
+
+# Audit Integration
+
+Log authentication events when applicable:
+
+- `LOGIN`
+- `LOGOUT`
+- `PASSWORD_RESET`
+- `TOKEN_REFRESH`
+- `TOKEN_REVOKE`
+
+---
+
+# Auth Logic Placement
+
+Authentication logic belongs in:
+
+- `backend/Template.API/CoreFeatures/Auth/`
+- `backend/Template.Core/Features/Auth/`
+- `backend/Template.Infrastructure/Auth/`
+- `frontend/src/features/auth/`
+- `IdentityService`
+- auth infrastructure adapters
+
+Do not scatter auth logic across unrelated modules.
+
+---
+
+# Goal
+
+Authentication must be:
+
+- Secure
+- Reusable
+- Testable
+- Provider Agnostic
+- Framework Agnostic
+- Compatible with JWT refresh token rotation

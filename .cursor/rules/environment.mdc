@@ -1,0 +1,280 @@
+---
+description: Environment configuration rules
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Environment Rules
+
+Follow:
+
+- `docs/12-environment.md`
+
+---
+
+# Single Source Of Truth
+
+Environment configuration must be split by runtime:
+
+Backend:
+
+- `appsettings.json`
+- `appsettings.{Environment}.json`
+- environment variables
+- strongly typed options classes
+
+Frontend:
+
+- Vite `.env` files
+- `import.meta.env`
+- typed frontend config module
+
+Do not use a universal cross-stack `env.ts` file for both backend and frontend.
+
+Do not read raw environment variables directly in feature code.
+
+---
+
+# Environment Validation
+
+Use strict validation at startup.
+
+Backend validation may use:
+
+- `IOptions<T>` validation
+- custom validators
+- startup checks in `Program.cs`
+
+Frontend validation may use:
+
+- typed `import.meta.env` access
+- runtime guards for required values
+
+Application must fail fast if:
+
+- required variable missing
+- invalid enum value
+- invalid URL
+- invalid configuration
+
+---
+
+# Config Layer
+
+Backend environment structure:
+
+```
+backend/Template.API/
+├── appsettings.json
+├── appsettings.Development.json
+├── appsettings.Production.json
+└── Program.cs
+```
+
+Frontend environment structure:
+
+```
+frontend/
+├── .env
+├── .env.local
+├── .env.development
+├── .env.production
+└── frontend/src/shared/config/
+```
+
+---
+
+# Backend Configuration Model
+
+Backend configuration should be split into:
+
+- application settings
+- database settings
+- auth settings
+- feature flags
+- external service settings
+
+Prefer strongly typed options classes such as:
+
+- `AppSettingsOptions`
+- `DatabaseOptions`
+- `AuthOptions`
+- `FeatureFlagsOptions`
+
+---
+
+# Feature Flipping
+
+Feature flags must support turning core modules on or off.
+
+Recommended structure in backend `appsettings.json`:
+
+```json
+{
+  "FeatureFlags": {
+    "Billing": false,
+    "AiChatbot": true
+  }
+}
+```
+
+Rules:
+
+- flags must be read from configuration, not hardcoded
+- flags must be available to backend services through typed options
+- frontend may mirror flags through public Vite environment values when UI hiding is needed
+- feature flags must not replace authorization
+
+Suggested backend options shape:
+
+- `FeatureFlags.Billing`
+- `FeatureFlags.AiChatbot`
+
+Suggested frontend public flags:
+
+- `VITE_FEATURE_BILLING`
+- `VITE_FEATURE_AI_CHATBOT`
+
+---
+
+# Public Variables
+
+Client-safe variables must use Vite public prefixes on the frontend.
+
+Examples:
+
+- `VITE_APP_URL`
+- `VITE_API_BASE_URL`
+- `VITE_FEATURE_BILLING`
+- `VITE_FEATURE_AI_CHATBOT`
+
+Do not expose server secrets to the browser.
+
+---
+
+# Server Variables
+
+Never expose to client:
+
+- `DATABASE_URL`
+- `AUTH_SECRET`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- API keys
+- tokens
+
+---
+
+# Supported Environment Variables
+
+Backend application:
+
+- `APP_NAME`
+- `ASPNETCORE_ENVIRONMENT`
+- `DATABASE_URL`
+- `AUTH_SECRET`
+- `AUTH_ISSUER`
+- `AUTH_AUDIENCE`
+
+Backend feature flags:
+
+- `FEATURE_BILLING`
+- `FEATURE_AI_CHATBOT`
+
+Frontend application:
+
+- `VITE_APP_URL`
+- `VITE_API_BASE_URL`
+- `VITE_FEATURE_BILLING`
+- `VITE_FEATURE_AI_CHATBOT`
+
+External integrations:
+
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
+- `STORAGE_PROVIDER`
+- `STORAGE_BUCKET`
+- `STORAGE_REGION`
+
+---
+
+# Enum Validation
+
+Backend runtime values must be validated.
+
+Examples:
+
+- development
+- test
+- production
+
+Production must not use stub or debug-only modes.
+
+---
+
+# Configuration Mapping
+
+## Backend
+
+Use `appsettings.json` for defaults and environment variables for overrides.
+
+Example precedence:
+
+1. `appsettings.json`
+2. `appsettings.{Environment}.json`
+3. environment variables
+4. secret store / platform variables
+
+## Frontend
+
+Use `.env` files and Vite build-time environment variables.
+
+Example precedence:
+
+1. `.env`
+2. `.env.local`
+3. `.env.development` or `.env.production`
+4. `.env.{mode}.local`
+
+---
+
+# Documentation Rule
+
+Every new environment variable must be documented in:
+
+- `.env.example`
+- `docs/12-environment.md`
+
+For backend-only values, document the `appsettings` key and any required deployment variable.
+
+---
+
+# Security Rules
+
+Never:
+
+- commit secrets
+- log secrets
+- expose secrets to frontend
+
+Do not print:
+
+- `DATABASE_URL`
+- `AUTH_SECRET`
+- API keys
+- tokens
+
+---
+
+# Goal
+
+Environment configuration must be:
+
+- typed
+- validated
+- centralized
+- secure
+- deployment friendly
+- support feature flipping for core modules

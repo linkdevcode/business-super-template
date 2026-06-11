@@ -1,0 +1,238 @@
+---
+description: Module rules for vertical slice features
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# Module Rules
+
+Business functionality must be implemented as vertical slice features.
+
+Every business feature should be organized by feature, not by a generic root folder.
+
+Follow `docs/01-architecture.md` as the canonical source.
+
+---
+
+# Backend Feature Location
+
+Backend features must be created inside the three backend projects:
+
+- `backend/Template.Core/Features/{FeatureName}/`
+- `backend/Template.Infrastructure/Features/{FeatureName}/`
+- `backend/Template.API/CoreFeatures/{FeatureName}/`
+
+Do not place backend business features outside those projects.
+
+---
+
+# Frontend Feature Location
+
+Frontend features must be created inside:
+
+- `frontend/src/features/{feature-name}/`
+
+Do not place frontend business features outside the frontend features folder.
+
+---
+
+# Vertical Slice Flow
+
+Backend feature flow:
+
+```
+Controller
+↓
+Handler / Use Case
+↓
+Repository Interface
+↓
+Repository Implementation
+↓
+Database
+```
+
+Frontend feature flow:
+
+```
+Page
+↓
+Hook
+↓
+API Client
+↓
+Backend API
+```
+
+---
+
+# Backend Feature Structure
+
+Each backend feature should be split across the solution as follows:
+
+```
+Template.Core/Features/{FeatureName}/
+├── Commands/
+├── Queries/
+├── Handlers/
+└── Interfaces/
+
+Template.Infrastructure/Features/{FeatureName}/
+└── Repositories/
+
+Template.API/CoreFeatures/{FeatureName}/
+└── {FeatureName}Controller.cs
+```
+
+Rules:
+
+- business logic lives in `Template.Core`
+- persistence lives in `Template.Infrastructure`
+- HTTP entry points live in `Template.API`
+- do not create `Services/` inside feature slices
+
+---
+
+# Frontend Feature Structure
+
+Each frontend feature should follow:
+
+```
+frontend/src/features/{feature-name}/
+├── components/
+├── pages/
+├── hooks/
+├── api/
+├── schemas/
+├── types/
+└── index.ts
+```
+
+Rules:
+
+- pages render UI
+- hooks manage state and data fetching
+- api clients call backend endpoints
+- schemas validate input with Zod
+- components stay feature-local unless shared across features
+
+---
+
+# Responsibilities
+
+## pages
+
+Pages render UI and orchestrate feature components.
+
+They must not contain business logic or database access.
+
+## hooks
+
+Hooks handle data fetching, mutations, and state orchestration.
+
+They must not contain business logic.
+
+## use-cases / handlers
+
+Use cases contain business logic, validation orchestration, permission checks, and audit coordination.
+
+This is the only place where business logic should live in backend business features.
+
+## repositories
+
+Repositories handle data access only.
+
+They must not contain business rules or domain calculations.
+
+## components
+
+Components are local UI building blocks.
+
+Move reusable UI to `frontend/src/shared/components/`.
+
+## schemas
+
+Validation schemas belong here.
+
+Use Zod on the frontend.
+Use FluentValidation or handler-level validation on the backend.
+
+## types
+
+Feature-specific types, DTOs, and input contracts belong here.
+
+---
+
+# Auth Feature Exception
+
+Auth is a platform feature and is split across backend and frontend layers.
+
+Backend:
+
+- `backend/Template.API/CoreFeatures/Auth/`
+- `backend/Template.Core/Features/Auth/`
+- `backend/Template.Infrastructure/Auth/`
+
+Frontend:
+
+- `frontend/src/features/auth/`
+
+Auth provider implementations live in `backend/Template.Infrastructure/Auth/`.
+Auth orchestration lives in the auth feature slice.
+
+---
+
+# Module Isolation
+
+A feature must not access another feature's internal files directly.
+
+Good:
+
+- import from a feature public entry point
+- import from backend project public contracts
+
+Bad:
+
+- importing repository internals from another feature
+- importing controller internals from another feature
+
+Prefer public APIs and `index.ts` exports.
+
+---
+
+# Shared Code
+
+Shared code belongs in:
+
+- `frontend/src/shared/`
+- `backend/Template.Core/Common/`
+
+Use shared code only when logic or UI is reused by multiple features.
+
+---
+
+# Feature Generation Rules
+
+When generating a new feature:
+
+1. create the feature slice in `Template.Core`
+2. create the matching persistence slice in `Template.Infrastructure`
+3. create the matching controller slice in `Template.API/CoreFeatures`
+4. create the matching frontend slice in `frontend/src/features/{feature-name}/`
+5. avoid generic root folders for business code
+
+---
+
+# Goal
+
+Features must be:
+
+- reusable
+- independent
+- testable
+- maintainable
+- AI friendly
+- predictable across backend and frontend

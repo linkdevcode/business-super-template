@@ -1,0 +1,226 @@
+---
+description: EF Core persistence standards
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# EF Core Rules
+
+Use:
+
+- PostgreSQL
+- EF Core
+- Fluent API
+
+Follow the database conventions defined in `database.mdc`.
+
+---
+
+# Layer Placement
+
+Place EF Core persistence code only in `Template.Infrastructure`.
+
+Allowed:
+
+- `AppDbContext`
+- entity configurations
+- migrations
+- repository implementations
+- query helpers that stay inside Infrastructure
+
+Forbidden:
+
+- data annotations on core entities
+- EF Core code in `Template.Core`
+- EF Core code in controllers, pages, hooks, or components
+
+---
+
+# Schema Configuration
+
+Use Fluent API for all mappings.
+
+Do not use data annotations for database shape.
+
+Recommended structure:
+
+- `Template.Infrastructure/Persistence/AppDbContext.cs`
+- `Template.Infrastructure/Persistence/Configurations/*.cs`
+- `Template.Infrastructure/Persistence/Migrations/*`
+
+---
+
+# Entity Design
+
+Core entities in `Template.Core` must remain persistence-ignorant.
+
+Rules:
+
+- No EF Core attributes on core entities
+- No provider-specific annotations on domain models
+- No direct dependency on Infrastructure from Core
+
+Persistence concerns belong to configuration classes in Infrastructure.
+
+---
+
+# Primary Keys
+
+Use `Guid` / `uuid` for all tables.
+
+Rules:
+
+- Configure generated IDs explicitly
+- Use database defaults where appropriate
+- Keep key generation consistent across entities
+
+---
+
+# Timestamp Columns
+
+Every persisted business table should map:
+
+- `created_at`
+- `updated_at`
+
+Prefer UTC values.
+
+---
+
+# Soft Delete
+
+Use a shared `ISoftDelete` contract for entities that support soft delete.
+
+Rules:
+
+- Add `DeletedAt` to soft-deletable entities
+- Apply a global query filter
+- Exclude deleted rows automatically from normal queries
+- Allow explicit bypass only when the use case requires it
+
+Example filter behavior:
+
+- normal queries exclude soft-deleted rows
+- admin or recovery flows may opt into ignored filters intentionally
+
+---
+
+# Read Query Rules
+
+Read-only queries should use `AsNoTracking()`.
+
+Use tracking only when the entity will be updated in the same unit of work.
+
+Rules:
+
+- list pages use `AsNoTracking()`
+- detail queries use `AsNoTracking()` unless edits follow immediately
+- avoid unnecessary change tracking in repositories
+
+---
+
+# Pagination Rules
+
+Use server-side pagination through `IQueryable`.
+
+Rules:
+
+- compose filters and ordering before materialization
+- apply `Skip` and `Take` at the database level
+- return total count separately when needed
+- do not page in memory
+
+---
+
+# Relations
+
+Define relationships with Fluent API.
+
+Rules:
+
+- configure foreign keys explicitly
+- configure navigation properties explicitly when needed
+- define many-to-many join tables clearly
+- prefer consistent relation names and indexes
+
+Avoid ad hoc joins that bypass model configuration.
+
+---
+
+# Transactions
+
+Use transactions when multiple writes must succeed together.
+
+Examples:
+
+- create user + assign role
+- create contract + create audit log
+- update settings + write history record
+
+---
+
+# JSONB Mapping
+
+Use JSONB for flexible configuration payloads.
+
+Primary use case:
+
+- `system_settings` table
+
+Recommended mapping approaches:
+
+- `JsonDocument`
+- strongly typed owned types mapped to JSONB
+- serialized DTOs stored in a JSONB column
+
+Rules:
+
+- keep the JSONB column in Infrastructure mapping
+- do not leak provider-specific JSON handling into Core
+- validate the payload in the application layer before persistence
+
+---
+
+# Repository Rules
+
+Repositories own database access.
+
+Rules:
+
+- only repositories query `DbContext`
+- repositories return domain models or DTOs as defined by the application layer
+- repositories do not contain business rules
+- repositories do not validate permissions
+
+---
+
+# Migrations
+
+Every database change must be represented by a migration.
+
+Rules:
+
+- generate migrations from EF Core tooling
+- do not edit production schema manually
+- review migrations before deployment
+
+---
+
+# Code Generation Rules
+
+When generating EF Core code:
+
+1. Use Fluent API only.
+2. Keep core entities persistence-ignorant.
+3. Use `Guid` primary keys.
+4. Apply `AsNoTracking()` for read-only queries.
+5. Use `IQueryable` for server-side pagination.
+6. Apply global query filters for soft delete.
+7. Keep JSONB mapping in Infrastructure.
+8. Follow repository pattern.
+9. Keep provider-specific details out of `Template.Core`.
+
+Consistency is more important than optimization.

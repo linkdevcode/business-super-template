@@ -1,0 +1,278 @@
+---
+description: CRUD architecture rules
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# CRUD Rules
+
+Follow:
+
+- `docs/09-crud-architecture.md`
+- `docs/01-architecture.md` (canonical)
+
+---
+
+# CRUD Flow
+
+Backend:
+
+```
+Controller
+↓
+Handler / Use Case
+↓
+Repository
+↓
+Database
+```
+
+Frontend:
+
+```
+Page
+↓
+Hook
+↓
+API Client
+↓
+Backend API
+```
+
+---
+
+# Controller Rule
+
+Backend resource controllers should inherit from `BaseController<TEntity>`.
+
+Rules:
+
+- keep CRUD boilerplate in the base controller
+- override only feature-specific behavior
+- keep controllers thin and HTTP-focused
+- do not access `DbContext` directly from controllers
+
+Controllers are still responsible for request binding, response formatting, and authorization entry points.
+
+---
+
+# Page Rule
+
+Pages are responsible for:
+
+- rendering UI
+- user interaction
+- composing feature components
+
+Pages must not contain:
+
+- business logic
+- database access
+
+---
+
+# Hook Rule
+
+Hooks are responsible for:
+
+- state management
+- data fetching
+- mutations
+- query orchestration via TanStack Query
+
+Do not place business logic inside hooks.
+
+Hooks only orchestrate data between UI and API client.
+
+---
+
+# Use Case Rule
+
+Use cases are responsible for:
+
+- business logic
+- validation orchestration
+- permission checks
+- audit logging
+- mapping repository errors to application errors
+
+Do not create services/ in business modules.
+
+---
+
+# Repository Rule
+
+Repositories are responsible for:
+
+- database queries
+- persistence
+- query composition with EF Core
+
+Repositories must not contain business logic.
+
+Rules:
+
+- use `AsNoTracking()` for read-only queries
+- use `IQueryable` for filtering, sorting, and pagination
+- keep paging server-side
+- respect soft delete filters
+
+---
+
+# Form Rule
+
+Use:
+
+- `react-hook-form`
+- `zod`
+
+for all forms.
+
+Validation must happen before the use case call.
+
+---
+
+# Table Rule
+
+Use a generic `<DataTable />` component for list pages.
+
+Rules:
+
+- powered by TanStack Query for fetching and cache synchronization
+- supports search, filter, pagination, and sorting
+- accepts feature-specific columns and actions
+- should be reused across CRUD list pages
+
+Avoid building one-off list tables when the generic table fits.
+
+---
+
+# CRUD Page Types
+
+Prefer the standard set:
+
+- List Page
+- Create Page
+- Edit Page
+- Detail Page
+
+Not every feature needs all four pages, but the pattern should stay consistent.
+
+---
+
+# Permission Rule
+
+CRUD operations should validate permissions.
+
+Examples:
+
+- `user:create`
+- `user:update`
+- `user:delete`
+- `user:view`
+
+Permission checks belong in the use case or server-side authorization boundary, never only in the UI.
+
+---
+
+# Audit Rule
+
+CRUD operations should create audit logs when applicable.
+
+Examples:
+
+- `CREATE`
+- `UPDATE`
+- `DELETE`
+
+Audit logging belongs in the use case layer or an application service coordinated by the use case.
+
+---
+
+# Error Handling
+
+Never expose raw database errors to the UI.
+
+Rules:
+
+- map infrastructure errors in the use case layer
+- return application-safe messages or error codes
+- keep validation failures distinct from persistence failures
+
+---
+
+# Validation Rule
+
+Validation should happen before repository calls.
+
+Preferred flow:
+
+```
+Form
+↓
+Zod Validation
+↓
+Use Case
+↓
+Repository
+```
+
+Backend validation should still protect invariants even if the frontend validates first.
+
+---
+
+# Read and Write Patterns
+
+Reads:
+
+- query through repositories
+- use `AsNoTracking()`
+- paginate server-side
+
+Writes:
+
+- validate command input
+- enforce permissions
+- call repository through use case
+- create audit log when needed
+
+---
+
+# System Settings CRUD
+
+`system_settings` is a special-case configuration resource.
+
+Rules:
+
+- use a single JSONB payload
+- validate the payload with a strongly typed schema
+- keep the UI generic when possible
+- preserve a stable API contract for config management
+
+---
+
+# Generic CRUD Stack
+
+Recommended default stack:
+
+- Backend controller inherits `BaseController<TEntity>`
+- Backend queries use EF Core repositories
+- Frontend list pages use generic `<DataTable />`
+- Frontend data loading uses TanStack Query
+- Frontend forms use `react-hook-form` + `zod`
+
+---
+
+# Goal
+
+CRUD implementations must be:
+
+- consistent
+- reusable
+- secure
+- predictable
+- easy to generate
+- aligned across backend and frontend

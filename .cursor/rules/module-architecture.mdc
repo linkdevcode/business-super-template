@@ -1,0 +1,223 @@
+---
+description: Module architecture rules
+alwaysApply: true
+---
+
+# Module Architecture Rules
+
+Follow:
+
+docs/01-architecture.md (canonical)
+
+docs/08-module-architecture.md
+
+---
+
+# Module Location
+
+All modules must live in:
+
+src/modules
+
+---
+
+# Business Module Flow
+
+Page
+
+↓
+
+Hook
+
+↓
+
+Use Case
+
+↓
+
+Repository
+
+↓
+
+Database
+
+---
+
+# Business Module Structure
+
+Every business module must follow:
+
+module/
+
+├── components/
+├── pages/
+├── hooks/
+├── use-cases/
+├── repositories/
+├── schemas/
+├── types/
+└── index.ts
+
+Do not create services/ inside business modules.
+
+---
+
+# Repository Rule
+
+Database access only inside:
+
+repositories/
+
+Never access database directly from:
+
+- pages
+- components
+- hooks
+
+---
+
+# Use Case Rule
+
+Business logic belongs in:
+
+use-cases/
+
+Do not place business logic in:
+
+- pages
+- components
+- hooks
+- repositories
+
+---
+
+# Auth Module Exception
+
+auth/ is a platform module — not a business module.
+
+Auth module may use:
+
+api/
+hooks/
+components/
+pages/
+schemas/
+types/
+
+Auth module does NOT require:
+
+- use-cases/
+- repositories/
+
+AuthProvider implementations belong in:
+
+backend/Template.Infrastructure/Auth/
+
+Auth orchestration belongs in:
+
+backend/Template.API/CoreFeatures/Auth/
+backend/Template.Core/Features/Auth/
+backend/Template.Infrastructure/Auth/
+frontend/src/features/auth/
+
+Auth module must not depend directly on Supabase or any specific provider.
+
+---
+
+# Schema Rule
+
+Validation schemas belong in:
+
+schemas/
+
+Use:
+
+Zod
+
+---
+
+# Type Rule
+
+Shared module types belong in:
+
+types/
+
+---
+
+# Hook Rule
+
+React hooks belong in:
+
+hooks/
+
+Examples:
+
+use-users
+
+use-create-user
+
+---
+
+# Public API Rule
+
+Every module must expose:
+
+index.ts
+
+Consumers must import from:
+
+modules/module-name
+
+Not from internal paths.
+
+---
+
+# Shared Code
+
+Shared reusable code belongs in:
+
+frontend/src/shared/
+
+Examples:
+
+components
+
+hooks
+
+utils
+
+constants
+
+types
+
+config
+
+---
+
+# Module Isolation
+
+Modules should be loosely coupled.
+
+Avoid direct access to another module's internal files.
+
+---
+
+# Tenant Model
+
+Current architecture:
+
+One Customer = One Database
+
+Do not add organization_id to new tables unless explicitly requested for future multi-tenant work.
+
+---
+
+# Goal
+
+Modules must be:
+
+- Independent
+- Reusable
+- Scalable
+- Maintainable
+- AI Friendly

@@ -1,0 +1,220 @@
+---
+description: React and Vite development rules
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# React Rules
+
+Use:
+
+- React 19+
+- TypeScript
+- Vite
+- React Router
+- TanStack Query
+- React Hook Form
+- Zod
+- Tailwind CSS
+- Shadcn UI
+
+---
+
+# Frontend Architecture
+
+This project is a React Vite SPA.
+
+Do not use server-rendering framework concepts.
+
+The frontend is client-rendered and bootstrapped via `frontend/src/app/main.tsx`.
+
+---
+
+# Bootstrap
+
+The SPA must be bootstrapped in `main.tsx`.
+
+`main.tsx` should:
+
+- create the React root
+- register global providers
+- mount the router
+- start the app
+
+Example:
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { App } from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+---
+
+# Routing
+
+Use React Router for client-side routing.
+
+Rules:
+
+- define public, protected, and permission-protected routes in the SPA router
+- keep route configuration in the app layer
+- avoid server-specific routing patterns
+
+---
+
+# Data Fetching
+
+Use TanStack Query for API state management.
+
+Rules:
+
+- use `useQuery` for reads
+- use `useMutation` for writes
+- centralize API calls in feature `api/` modules
+- keep side effects in hooks, not in components
+- avoid `useEffect` for initial data loading when TanStack Query can manage the request
+
+---
+
+# Form Convention
+
+Use:
+
+- React Hook Form
+- Zod
+- `@hookform/resolvers/zod`
+
+Pattern:
+
+```
+Schema
+→ Form
+→ Hook / Mutation
+→ API Client
+→ Backend API
+```
+
+Validation should come from `schemas/`.
+Do not duplicate validation logic inside components.
+
+---
+
+# Component Design
+
+Components should have one responsibility.
+
+Avoid very large components.
+
+If a component becomes too large, extract smaller components.
+
+---
+
+# Table Convention
+
+Prefer TanStack Table for complex data tables.
+
+Use a shared generic `DataTable` component when available.
+
+Rules:
+
+- support search
+- support filter
+- support pagination
+- support sorting
+- reuse shared columns and action patterns
+
+---
+
+# Dialog Convention
+
+Prefer Shadcn Dialog.
+Reuse existing dialog patterns.
+
+---
+
+# UI Consistency
+
+Prefer existing shared components before creating new ones.
+
+Examples:
+
+- DataTable
+- ConfirmDialog
+- PageHeader
+- FileUpload
+
+---
+
+# Loading and Error States
+
+Use React-friendly loading and error UI patterns.
+
+Rules:
+
+- show loading indicators through component state, suspense boundaries, or shared UI patterns
+- show error states through local components or route wrappers
+- do not rely on file-based conventions from other frameworks
+
+---
+
+# Styling
+
+Use Tailwind CSS.
+Avoid inline styles.
+
+Bad:
+
+```tsx
+style={{ marginTop: 10 }}
+```
+
+Good:
+
+```tsx
+className="mt-2"
+```
+
+---
+
+# State Management
+
+Default to local state when the state is purely local.
+Use TanStack Query for server state.
+Avoid introducing Redux, MobX, or Recoil unless explicitly required.
+
+---
+
+# Accessibility
+
+Use semantic HTML whenever possible.
+
+Examples:
+
+- button
+- form
+- label
+- table
+
+---
+
+# Code Generation Rules
+
+When generating React code:
+
+1. use Vite bootstrap in `main.tsx`
+2. use React Router for routing
+3. use TanStack Query for server state
+4. use React Hook Form + Zod for forms
+5. reuse shared components
+6. use Tailwind
+7. follow existing UI patterns

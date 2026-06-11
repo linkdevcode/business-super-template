@@ -1,0 +1,336 @@
+---
+description: TypeScript coding standards
+globs:
+  - "**/*.cs"
+  - "**/*.ts"
+  - "**/*.tsx"
+alwaysApply: true
+---
+
+# TypeScript Rules
+
+Use TypeScript strict mode.
+Prioritize type safety and readability.
+
+---
+
+# Type Safety
+
+Always use explicit types where appropriate.
+Avoid implicit assumptions.
+Prefer compile-time safety over runtime surprises.
+
+---
+
+# No Any
+
+Never use `any`.
+
+Bad:
+
+```ts
+const data: any = response;
+function process(input: any) {}
+```
+
+Use `unknown` or a proper type definition.
+
+Good:
+
+```ts
+const data: unknown = response;
+```
+
+---
+
+# Prefer Type Over Interface
+
+Prefer `type` for local TypeScript models.
+
+Example:
+
+```ts
+type User = {
+  id: string;
+  name: string;
+};
+```
+
+Use `interface` only when:
+
+- declaration merging is required
+- a library API requires interface
+- representing API DTO contracts that mirror .NET API DTOs
+
+For .NET API DTOs consumed by the frontend, use `interface` so the contract stays explicit and easy to extend.
+
+---
+
+# Explicit Return Types
+
+Exported functions should define return types.
+
+Example:
+
+```ts
+export async function createUserAction(
+  input: CreateUserInput
+): Promise<ActionResult<User>> {
+  ...
+}
+```
+
+---
+
+# Async Rules
+
+Prefer `async / await`.
+Do not use chained `.then()`.
+
+Bad:
+
+```ts
+repository
+  .findById(id)
+  .then(...)
+```
+
+Good:
+
+```ts
+const user = await repository.findById(id);
+```
+
+---
+
+# Null Safety
+
+Always handle `null` and `undefined` explicitly.
+
+Bad:
+
+```ts
+return user.name;
+```
+
+Good:
+
+```ts
+if (!user) {
+  throw new Error("User not found");
+}
+
+return user.name;
+```
+
+---
+
+# Optional Chaining
+
+Use optional chaining only when null is expected.
+
+Bad:
+
+```ts
+user?.name?.toString()?.trim()
+```
+
+Good:
+
+```ts
+user.name.trim()
+```
+
+Do not use optional chaining to hide bugs.
+
+---
+
+# Type Assertions
+
+Avoid `as any`.
+
+Prefer:
+
+- type guards
+- proper validation
+- explicit DTO parsing
+
+---
+
+# Zod Validation
+
+External input must be validated with Zod.
+
+Examples:
+
+- form data
+- query params
+- API payloads
+- token refresh responses
+
+Do not trust external input.
+
+---
+
+# DTO Types
+
+Frontend types that represent `.NET` API DTOs should be declared as explicit interfaces.
+
+Examples:
+
+```ts
+interface UserDto {
+  id: string;
+  fullName: string;
+}
+```
+
+```ts
+interface RefreshTokenResponseDto {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string;
+}
+```
+
+Use `type` for purely local utility types and unions.
+Use `interface` for boundary contracts that mirror backend DTOs.
+
+---
+
+# Enums
+
+Prefer `const object + type` instead of `enum`.
+
+Bad:
+
+```ts
+enum UserStatus {
+  ACTIVE,
+  INACTIVE
+}
+```
+
+Good:
+
+```ts
+export const USER_STATUS = {
+  ACTIVE: "ACTIVE",
+  INACTIVE: "INACTIVE",
+} as const;
+
+export type UserStatus =
+  (typeof USER_STATUS)[keyof typeof USER_STATUS];
+```
+
+---
+
+# Magic Strings
+
+Avoid repeated strings.
+
+Bad:
+
+```ts
+if (status === "ACTIVE")
+```
+
+Good:
+
+```ts
+if (status === USER_STATUS.ACTIVE)
+```
+
+---
+
+# Function Size
+
+A function should do one thing.
+If a function exceeds roughly 50 lines, consider extracting helper functions.
+
+---
+
+# Object Destructuring
+
+Prefer:
+
+```ts
+const { id, email } = user;
+```
+
+instead of:
+
+```ts
+const id = user.id;
+const email = user.email;
+```
+
+---
+
+# Imports
+
+Use absolute imports with aliases.
+
+Good:
+
+```ts
+import { UserRepository } from "@/modules/user/repositories/user.repository";
+```
+
+Bad:
+
+```ts
+import { UserRepository } from "../../../../repositories/user.repository";
+```
+
+---
+
+# Error Handling
+
+Never swallow errors.
+
+Bad:
+
+```ts
+try {
+  ...
+} catch (error) {}
+```
+
+Good:
+
+```ts
+try {
+  ...
+} catch (error) {
+  throw error;
+}
+```
+
+Or use a project-standard error handler.
+
+---
+
+# Readability
+
+Prefer readable code over clever code.
+Avoid unnecessary abstractions.
+Avoid deeply nested conditions.
+Extract helper functions when needed.
+
+---
+
+# Code Generation Rules
+
+When generating TypeScript code:
+
+1. Avoid `any`.
+2. Prefer `type` for local models.
+3. Use `interface` for .NET API DTO contracts.
+4. Use `async/await`.
+5. Validate external input.
+6. Handle null explicitly.
+7. Return typed results.
+8. Keep functions small and focused.
+
+Consistency and type safety are more important than brevity.
