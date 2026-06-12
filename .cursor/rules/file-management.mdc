@@ -1,0 +1,41 @@
+# File Management Rules
+
+## Purpose
+Generic file module dùng chung cho toàn bộ ứng dụng trên stack `.NET 9 Web API + React Vite SPA`.
+
+## Required Locations
+Backend:
+- `backend/Template.Core/Features/FileManagement/`
+- `backend/Template.Infrastructure/Features/FileManagement/`
+- `backend/Template.API/CoreFeatures/FileManagement/`
+
+Frontend:
+- `frontend/src/features/file-management/`
+
+## Database
+- Dùng một bảng chung `files`.
+- `files` là bảng metadata độc lập.
+- Các bảng nghiệp vụ dùng `file_id` khóa ngoại hoặc bảng trung gian nếu là quan hệ một-nhiều.
+- Dùng soft delete cho file nghiệp vụ.
+
+## Required Fields
+`files` nên có:
+- `id`, `file_name`, `original_name`, `mime_type`, `file_size`
+- `storage_provider`, `storage_path`, `public_url`
+- `uploaded_by`
+- `created_at`, `updated_at`, `deleted_at`
+
+## Storage Access
+- Chỉ infrastructure layer được chạm vào SDK storage.
+- Use case chỉ dùng `StorageProvider` abstraction.
+- Không truy cập trực tiếp S3, Supabase Storage hay local filesystem từ UI.
+
+## Permissions and Audit
+- Permission: `File.Read`, `File.Create`, `File.Update`, `File.Delete`.
+- Audit cho upload, delete, restore.
+
+## Forbidden
+- Không tạo bảng file theo từng module.
+- Không hard delete file ngay khi user xoá.
+- Không nhét business-specific fields vào `files`.
+

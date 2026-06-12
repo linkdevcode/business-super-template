@@ -1,0 +1,68 @@
+# Master Data Module Rules
+
+## Purpose
+Generate standardized CRUD business features on the stack `.NET 9 Web API + React Vite SPA`.
+
+## Required Locations
+Backend:
+- `backend/Template.Core/Features/{FeatureName}/`
+- `backend/Template.Infrastructure/Features/{FeatureName}/`
+- `backend/Template.API/CoreFeatures/{FeatureName}/`
+
+Frontend:
+- `frontend/src/features/{feature-name}/`
+
+## Required Structure
+Backend:
+```text
+Template.Core/Features/{FeatureName}/
+├── Commands/
+├── Queries/
+├── Handlers/
+└── Interfaces/
+```
+
+Frontend:
+```text
+frontend/src/features/{feature-name}/
+├── components/
+├── pages/
+├── hooks/
+├── api/
+├── schemas/
+├── types/
+└── index.ts
+```
+
+## Business Logic
+- Chỉ đặt business logic trong backend use cases/handlers.
+- Không đặt business logic trong pages, hooks, repositories, components.
+
+## Repository Rules
+- Repository chỉ xử lý database access.
+- Read queries dùng `AsNoTracking()`.
+- Filter, sort, pagination phải dùng `IQueryable` và chạy server-side.
+- Không chứa permission logic hay domain rules.
+
+## Form and UI
+- Form dùng `react-hook-form` + `zod`.
+- List page dùng `DataTable`.
+- Data loading/mutations dùng TanStack Query.
+- Detail page có thể hiển thị audit timeline.
+
+## Data Rules
+- Dùng `uuid` cho primary key.
+- Table dùng `snake_case` và số nhiều.
+- Ưu tiên `created_at`, `updated_at`, `deleted_at` cho business entities.
+- Soft delete là mặc định cho entity nghiệp vụ.
+
+## Audit and Permission
+- Audit `CREATE`, `UPDATE`, `DELETE` khi có thay đổi dữ liệu.
+- Permission theo dạng PascalCase dot format, ví dụ `Customer.Read`.
+
+## Naming
+- C# file/class dùng PascalCase.
+- React component dùng PascalCase.
+- Hook file như `useCustomers.ts`.
+- API client như `customerApi.ts`.
+

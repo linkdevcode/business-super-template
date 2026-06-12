@@ -7,80 +7,113 @@ alwaysApply: true
 
 Follow:
 
-docs/01-architecture.md (canonical)
-
-docs/08-module-architecture.md
+- `docs/01-architecture.md` (canonical)
+- `docs/08-module-architecture.md`
 
 ---
 
 # Module Location
 
-All modules must live in:
+## Backend
+- `backend/Template.Core/Features/{FeatureName}/`
+- `backend/Template.Infrastructure/Features/{FeatureName}/`
+- `backend/Template.API/CoreFeatures/{FeatureName}/`
 
-src/modules
+## Frontend
+- `frontend/src/features/{feature-name}/`
 
 ---
 
 # Business Module Flow
 
-Page
+Backend:
 
+```text
+Controller
 ↓
-
-Hook
-
+Handler / Use Case
 ↓
-
-Use Case
-
+Repository Interface
 ↓
-
-Repository
-
+Repository Implementation
 ↓
-
 Database
+```
+
+Frontend:
+
+```text
+Page / Component
+↓
+Hook
+↓
+API Client
+↓
+Backend API
+```
 
 ---
 
-# Business Module Structure
+# Backend Module Structure
 
-Every business module must follow:
+```text
+Template.Core/Features/{FeatureName}/
+├── Commands/
+├── Queries/
+├── Handlers/
+└── Interfaces/
 
-module/
+Template.Infrastructure/Features/{FeatureName}/
+└── Repositories/
 
+Template.API/CoreFeatures/{FeatureName}/
+└── {FeatureName}Controller.cs
+```
+
+Business logic lives in `Template.Core`.
+Persistence lives in `Template.Infrastructure`.
+HTTP entry points live in `Template.API`.
+
+---
+
+# Frontend Module Structure
+
+```text
+frontend/src/features/{feature-name}/
 ├── components/
 ├── pages/
 ├── hooks/
-├── use-cases/
-├── repositories/
+├── api/
 ├── schemas/
 ├── types/
 └── index.ts
+```
 
-Do not create services/ inside business modules.
+Pages render UI.
+Hooks manage state and data fetching.
+API clients call backend endpoints.
+Schemas use Zod.
 
 ---
 
 # Repository Rule
 
-Database access only inside:
-
-repositories/
+Database access only inside repositories.
 
 Never access database directly from:
 
 - pages
 - components
 - hooks
+- controllers
+
+Repositories should prefer `AsNoTracking()` for read-only queries.
 
 ---
 
 # Use Case Rule
 
-Business logic belongs in:
-
-use-cases/
+Business logic belongs in backend use cases / handlers.
 
 Do not place business logic in:
 
@@ -88,87 +121,24 @@ Do not place business logic in:
 - components
 - hooks
 - repositories
+- controllers
 
 ---
 
 # Auth Module Exception
 
-auth/ is a platform module — not a business module.
+`auth` is a platform module, not a business module.
 
-Auth module may use:
+Backend:
+- `backend/Template.API/CoreFeatures/Auth/`
+- `backend/Template.Core/Features/Auth/`
+- `backend/Template.Infrastructure/Auth/`
 
-api/
-hooks/
-components/
-pages/
-schemas/
-types/
+Frontend:
+- `frontend/src/features/auth/`
 
-Auth module does NOT require:
-
-- use-cases/
-- repositories/
-
-AuthProvider implementations belong in:
-
-backend/Template.Infrastructure/Auth/
-
-Auth orchestration belongs in:
-
-backend/Template.API/CoreFeatures/Auth/
-backend/Template.Core/Features/Auth/
-backend/Template.Infrastructure/Auth/
-frontend/src/features/auth/
-
-Auth module must not depend directly on Supabase or any specific provider.
-
----
-
-# Schema Rule
-
-Validation schemas belong in:
-
-schemas/
-
-Use:
-
-Zod
-
----
-
-# Type Rule
-
-Shared module types belong in:
-
-types/
-
----
-
-# Hook Rule
-
-React hooks belong in:
-
-hooks/
-
-Examples:
-
-use-users
-
-use-create-user
-
----
-
-# Public API Rule
-
-Every module must expose:
-
-index.ts
-
-Consumers must import from:
-
-modules/module-name
-
-Not from internal paths.
+Auth provider implementations belong in `backend/Template.Infrastructure/Auth/`.
+Auth orchestration belongs in the auth feature slice.
 
 ---
 
@@ -176,29 +146,17 @@ Not from internal paths.
 
 Shared reusable code belongs in:
 
-frontend/src/shared/
+- `frontend/src/shared/`
+- `Template.Core/Common/`
 
-Examples:
-
-components
-
-hooks
-
-utils
-
-constants
-
-types
-
-config
+Use shared code only when logic or UI is reused by multiple features.
 
 ---
 
 # Module Isolation
 
-Modules should be loosely coupled.
-
-Avoid direct access to another module's internal files.
+Features should be loosely coupled.
+Avoid direct access to another feature's internal files.
 
 ---
 
@@ -208,7 +166,7 @@ Current architecture:
 
 One Customer = One Database
 
-Do not add organization_id to new tables unless explicitly requested for future multi-tenant work.
+Do not add `organization_id` to new tables unless explicitly requested.
 
 ---
 
@@ -216,8 +174,10 @@ Do not add organization_id to new tables unless explicitly requested for future 
 
 Modules must be:
 
-- Independent
-- Reusable
-- Scalable
-- Maintainable
-- AI Friendly
+- independent
+- reusable
+- scalable
+- maintainable
+- AI friendly
+- predictable across backend and frontend
+

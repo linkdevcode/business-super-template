@@ -1,0 +1,34 @@
+# Dashboard Rules
+
+## Purpose
+Dashboard là module chỉ-đọc trên stack `.NET 9 Web API + React Vite SPA`.
+
+## Required Locations
+Backend:
+- `backend/Template.Core/Features/Dashboard/`
+- `backend/Template.Infrastructure/Features/Dashboard/`
+- `backend/Template.API/CoreFeatures/Dashboard/`
+
+Frontend:
+- `frontend/src/features/dashboard/`
+
+## Rules
+- Dashboard chỉ tổng hợp dữ liệu, không tạo/sửa/xóa records.
+- Business calculation phải nằm trong backend use case.
+- Không có form CRUD cho dashboard.
+- Không chứa write flow hay transaction flow.
+
+## Data Sources
+- KPI cards.
+- Summary cards.
+- Charts.
+- Recent activities từ `audit_logs`.
+
+## Query Rules
+- Use cases chỉ đọc dữ liệu qua repository.
+- Read queries dùng `AsNoTracking()`.
+- Filter/sort/pagination vẫn phải server-side nếu có.
+
+## Permission
+- `Dashboard.View`.
+

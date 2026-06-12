@@ -1,0 +1,41 @@
+# Notification Module Rules
+
+## Purpose
+Generic notification module trên stack `.NET 9 Web API + React Vite SPA`.
+
+## Required Locations
+Backend:
+- `backend/Template.Core/Features/Notification/`
+- `backend/Template.Infrastructure/Features/Notification/`
+- `backend/Template.API/CoreFeatures/Notification/`
+
+Frontend:
+- `frontend/src/features/notification/`
+
+## Use Cases
+- `create-notification.use-case.ts`
+- `mark-as-read.use-case.ts`
+- `mark-all-as-read.use-case.ts`
+- `get-notifications.use-case.ts`
+- Notification real-time phải đi qua `NotificationHub` và client `HubConnection`.
+
+## Database
+Bảng `notifications` nên có:
+- `id`, `user_id`, `title`, `message`, `type`
+- `entity_type`, `entity_id`
+- `is_read`, `read_at`
+- `created_at`, `updated_at`, `deleted_at`
+
+## Providers
+- Gửi email phải thông qua `EmailProvider` abstraction.
+- Provider implementations nằm ở `backend/Template.Infrastructure/Email/`.
+- Không gửi email trực tiếp từ UI hay repository.
+
+## Permissions
+- `Notification.Read`
+- `Notification.Update`
+
+## Audit
+- Không bắt buộc audit mọi lần read.
+- Chỉ audit khi notification ảnh hưởng tới business process.
+

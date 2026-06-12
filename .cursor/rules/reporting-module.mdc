@@ -1,0 +1,32 @@
+# Reporting Module Rules
+
+## Purpose
+Reporting module tạo báo cáo và export dữ liệu trên stack `.NET 9 Web API + React Vite SPA`.
+
+## Required Locations
+Backend:
+- `backend/Template.Core/Features/Reporting/`
+- `backend/Template.Infrastructure/Features/Reporting/`
+- `backend/Template.API/CoreFeatures/Reporting/`
+
+Frontend:
+- `frontend/src/features/reporting/`
+
+## Rules
+- Reporting chỉ đọc dữ liệu hiện có.
+- Logic xuất file phải nằm trong backend use case và export provider.
+- Không generate Excel/PDF trực tiếp trong UI.
+
+## Export Provider
+- Provider nằm ở `backend/Template.Infrastructure/Export/`.
+- Hỗ trợ Excel, CSV, PDF.
+- Use case chỉ orchestration, không phụ thuộc SDK export cụ thể.
+- Với báo cáo nặng, ưu tiên trả `Stream` hoặc sinh file tạm trên storage rồi trả link download cho frontend.
+
+## Permissions
+- `Report.View`
+- `Report.Export`
+
+## Audit
+- Export report phải có audit log.
+

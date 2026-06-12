@@ -1,0 +1,45 @@
+# Transaction Module Rules
+
+## Purpose
+Generate business modules có trạng thái, vòng đời, và approval flow trên stack `.NET 9 Web API + React Vite SPA`.
+
+## Required Locations
+Backend:
+- `backend/Template.Core/Features/{FeatureName}/`
+- `backend/Template.Infrastructure/Features/{FeatureName}/`
+- `backend/Template.API/CoreFeatures/{FeatureName}/`
+
+Frontend:
+- `frontend/src/features/{feature-name}/`
+
+## Business Rules
+- Status phải được quản lý bằng use case riêng.
+- Không được update status tùy ý qua generic update.
+- Submit/approve/reject/cancel/close phải là use case riêng nếu feature cần approval.
+- Validation nghiệp vụ chỉ nằm trong backend use case.
+- Attachment phải đi qua file-management module bằng FK hoặc bảng trung gian, không lưu blob trong transaction table.
+
+## Required UI
+- List page, detail page, create/edit page.
+- Nếu có approval, thêm approval page hoặc approval panel.
+- Detail page nên có timeline từ audit log.
+
+## Repository Rules
+- Repository chỉ xử lý query/persistence.
+- Không chứa business rules hay transition rules.
+- Read queries dùng `AsNoTracking()`.
+
+## Data Rules
+- Bảng dùng `status` rõ ràng.
+- Transition phải được mô tả trước và validate trong use case.
+- Search thường gồm keyword, status, date range.
+
+## Audit and Permission
+- Audit thêm `SUBMIT`, `APPROVE`, `REJECT`, `CANCEL`, `CLOSE` khi phù hợp.
+- Permission tối thiểu: `Contract.Read`, `Contract.Create`, `Contract.Update`, `Contract.Delete`.
+- Nếu có approval thì thêm `Contract.Submit`, `Contract.Approve`, `Contract.Reject`.
+
+## Naming
+- Tách use case rõ ràng: `Submit...`, `Approve...`, `Reject...`.
+- Frontend hook/api/type file theo chuẩn repo hiện có.
+
