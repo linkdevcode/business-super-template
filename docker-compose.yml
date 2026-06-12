@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: template-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: template_db
+      POSTGRES_PASSWORD: template_db
+      POSTGRES_DB: template_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: template-pgadmin
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@template.local
+      PGADMIN_DEFAULT_PASSWORD: template_db
+      PGADMIN_CONFIG_SERVER_MODE: "True"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data:
