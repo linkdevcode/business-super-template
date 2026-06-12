@@ -1,10 +1,7 @@
 import "./App.css";
+import type { ReactElement } from "react";
+import { AppRouter } from "./router";
 
-export function App() {
-  return (
-    <main className="app-shell">
-      <h1>My Super Template</h1>
-      <p>Frontend scaffold is ready.</p>
-    </main>
-  );
+export function App(): ReactElement {
+  return <AppRouter />;
 }

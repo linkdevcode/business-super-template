@@ -63,24 +63,24 @@
 
 ### Frontend (React + TS)
 
-* [ ] **2.4. Cấu hình Core & HTTP Client**
-* [ ] Cài đặt các package nền tảng: `axios`, `react-router-dom`, `@tanstack/react-query`, `tailwindcss`.
-* [ ] Tạo `frontend/src/shared/http/axiosClient.ts` cấu hình các Interceptors:
-* [ ] **Request Interceptor:** Tự động đính kèm Access Token lấy từ App Memory (React State) vào Header của mỗi request.
-* [ ] **Response Interceptor (Bắt lỗi 401):** Tự động gọi API đổi token mới bằng Refresh Token (Lưu tại HttpOnly Cookie). Nếu lấy thành công, thử lại request cũ.
-* [ ] **Xử lý Ngắt chuỗi (Logout đồng bộ):** Nếu API đổi token thất bại hoặc Refresh Token hết hạn, tự động xóa sạch Auth State trong Memory và đẩy người dùng (`window.location.href`) trực tiếp về màn hình `/login`.
+* [x] **2.4. Cấu hình Core & HTTP Client**
+* [x] Cài đặt các package nền tảng: `axios`, `react-router-dom`, `@tanstack/react-query`, `tailwindcss`.
+* [x] Tạo `frontend/src/shared/http/axiosClient.ts` cấu hình các Interceptors:
+* [x] **Request Interceptor:** Tự động đính kèm Access Token lấy từ App Memory (React State) vào Header của mỗi request.
+* [x] **Response Interceptor (Bắt lỗi 401):** Tự động gọi API đổi token mới bằng Refresh Token (Lưu tại HttpOnly Cookie). Nếu lấy thành công, thử lại request cũ.
+* [x] **Xử lý Ngắt chuỗi (Logout đồng bộ):** Nếu API đổi token thất bại hoặc Refresh Token hết hạn, tự động xóa sạch Auth State trong Memory và đẩy người dùng (`window.location.href`) trực tiếp về màn hình `/login`.
 
 
-* [ ] Tạo `frontend/src/app/providers.tsx` để bọc `QueryClientProvider` (TanStack Query) và các provider toàn cục của ứng dụng.
-* [ ] Cấu hình `frontend/src/shared/config/` để bọc an toàn và ép kiểu chặt chẽ (Strongly-typed) cho các biến môi trường `import.meta.env` có tiền tố `VITE_*`.
+* [x] Tạo `frontend/src/app/providers.tsx` để bọc `QueryClientProvider` (TanStack Query) và các provider toàn cục của ứng dụng.
+* [x] Cấu hình `frontend/src/shared/config/` để bọc an toàn và ép kiểu chặt chẽ (Strongly-typed) cho các biến môi trường `import.meta.env` có tiền tố `VITE_*`.
 
 
-* [ ] **2.5. Khởi tạo Khung UI & Layout**
-* [ ] Tích hợp `shadcn/ui` và tạo sẵn các UI component dùng chung cốt lõi: `Button`, `Input`, `Table`, `Dialog`.
-* [ ] Tạo siêu component dùng chung `<DataTable />` dựa trên TanStack Table kết hợp chặt chẽ với các hooks của TanStack Query để tự động handle việc hiển thị dữ liệu phân trang, lọc, sắp xếp từ Backend trả về.
-* [ ] Viết `frontend/src/app/layouts/AdminLayout.tsx` gồm Sidebar, Header (có khu vực hiển thị Avatar, Quả chuông thông báo) và vùng render nội dung chính (`<Outlet />`).
-* [ ] Viết `frontend/src/app/layouts/AuthLayout.tsx` bọc khung giao diện gọn sạch chuyên biệt cho các màn hình đăng nhập, khôi phục mật khẩu.
-* [ ] Chuẩn bị file `frontend/src/app/router.tsx` cấu hình React Router chia rõ các nhóm Route: Public Route, Protected Route (Yêu cầu đăng nhập), và Permission Protected Route (Yêu cầu check chuỗi quyền PascalCase).
+* [x] **2.5. Khởi tạo Khung UI & Layout**
+* [x] Tích hợp `shadcn/ui` và tạo sẵn các UI component dùng chung cốt lõi: `Button`, `Input`, `Table`, `Dialog`.
+* [x] Tạo siêu component dùng chung `<DataTable />` dựa trên TanStack Table kết hợp chặt chẽ với các hooks của TanStack Query để tự động handle việc hiển thị dữ liệu phân trang, lọc, sắp xếp từ Backend trả về.
+* [x] Viết `frontend/src/app/layouts/AdminLayout.tsx` gồm Sidebar, Header (có khu vực hiển thị Avatar, Quả chuông thông báo) và vùng render nội dung chính (`<Outlet />`).
+* [x] Viết `frontend/src/app/layouts/AuthLayout.tsx` bọc khung giao diện gọn sạch chuyên biệt cho các màn hình đăng nhập, khôi phục mật khẩu.
+* [x] Chuẩn bị file `frontend/src/app/router.tsx` cấu hình React Router chia rõ các nhóm Route: Public Route, Protected Route (Yêu cầu đăng nhập), và Permission Protected Route (Yêu cầu check chuỗi quyền PascalCase).
 ---
 
 ## Phase 3: Triển khai các Module Chung (Core Features)
