@@ -388,6 +388,43 @@ Use comments only when:
 
 ---
 
+# XML Documentation Rules
+
+Use XML documentation for public backend code and shared contracts.
+
+## Classes / Records / Interfaces
+
+- Add a short `<summary>` that explains the responsibility.
+- Keep it concise and meaningful.
+
+## Public Properties / Fields
+
+- Document the purpose of each member with `<summary>`.
+- Prefer documenting business meaning, side effects, and nullability when relevant.
+
+## Public Methods
+
+- Document public methods with `<summary>`.
+- Describe inputs, outputs, and side effects when they are not obvious.
+
+## Interface Members
+
+- Write full XML docs on interfaces and interface members.
+- Interface docs should explain the contract clearly.
+
+## Implementations
+
+- Use `<inheritdoc />` for methods and members that implement documented interfaces or overrides.
+- Only add extra XML docs when the implementation has behavior worth calling out.
+
+## General Rule
+
+- Keep documentation close to the code.
+- Prefer short, accurate docs over long explanations.
+- Document why a member exists, not what the syntax already makes obvious.
+
+---
+
 # Validation Rules
 
 **Frontend:** validation belongs in `schemas/` (Zod).
