@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Template.Core.Common.Interfaces;
 using Template.Core.Common.Models;
+using Template.Core.Entities;
 using System.Text.Json;
 
 namespace Template.Infrastructure.Persistence;
@@ -17,6 +18,24 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     /// <summary>Gets the audit log set.</summary>
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+
+    /// <summary>Gets the user set.</summary>
+    public DbSet<User> Users => Set<User>();
+
+    /// <summary>Gets the role set.</summary>
+    public DbSet<Role> Roles => Set<Role>();
+
+    /// <summary>Gets the permission set.</summary>
+    public DbSet<Permission> Permissions => Set<Permission>();
+
+    /// <summary>Gets the user-role link set.</summary>
+    public DbSet<UserRole> UserRoles => Set<UserRole>();
+
+    /// <summary>Gets the role-permission link set.</summary>
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+
+    /// <summary>Gets the system setting set.</summary>
+    public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
 
     /// <inheritdoc />
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -44,6 +63,8 @@ public class AppDbContext : DbContext, IUnitOfWork
     private List<AuditLog> PrepareTrackedEntities(DateTime utcNow)
     {
         var auditLogs = new List<AuditLog>();
+
+        PrepareStandaloneEntities(utcNow);
 
         foreach (var entry in ChangeTracker.Entries<BaseEntity>())
         {
@@ -80,6 +101,59 @@ public class AppDbContext : DbContext, IUnitOfWork
         }
 
         return auditLogs;
+    }
+
+    private void PrepareStandaloneEntities(DateTime utcNow)
+    {
+        foreach (var entry in ChangeTracker.Entries<SystemSetting>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                if (entry.Entity.Id == Guid.Empty)
+                {
+                    entry.Entity.Id = Guid.NewGuid();
+                }
+
+                if (entry.Entity.CreatedAt == default)
+                {
+                    entry.Entity.CreatedAt = utcNow;
+                }
+
+                entry.Entity.UpdatedAt = utcNow;
+                continue;
+            }
+
+            if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedAt = utcNow;
+            }
+        }
+
+        foreach (var entry in ChangeTracker.Entries<UserRole>())
+        {
+            if (entry.State == EntityState.Added && entry.Entity.Id == Guid.Empty)
+            {
+                entry.Entity.Id = Guid.NewGuid();
+            }
+
+            if (entry.State == EntityState.Added && entry.Entity.CreatedAt == default)
+            {
+                entry.Entity.CreatedAt = utcNow;
+            }
+        }
+
+        foreach (var entry in ChangeTracker.Entries<RolePermission>())
+        {
+            if (entry.State == EntityState.Added && entry.Entity.Id == Guid.Empty)
+            {
+                entry.Entity.Id = Guid.NewGuid();
+            }
+
+            if (entry.State == EntityState.Added && entry.Entity.CreatedAt == default)
+            {
+                entry.Entity.CreatedAt = utcNow;
+            }
+        }
     }
 
     private static void SetEntityIdentity(EntityEntry<BaseEntity> entry, DateTime utcNow)

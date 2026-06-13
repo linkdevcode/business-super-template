@@ -3,9 +3,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Template.Core.Features.Auth;
+using Template.Core.Entities;
+using Template.Infrastructure.Persistence;
 
 namespace Template.Infrastructure.Auth;
 
@@ -13,20 +17,20 @@ namespace Template.Infrastructure.Auth;
 public sealed class IdentityService : IIdentityService
 {
     private readonly AuthOptions _options;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ConcurrentDictionary<string, RefreshTokenRecord> _refreshTokens = new(StringComparer.Ordinal);
 
     /// <summary>Creates a new identity service.</summary>
-    public IdentityService(IOptions<AuthOptions> options)
+    public IdentityService(IOptions<AuthOptions> options, IServiceScopeFactory serviceScopeFactory)
     {
         _options = options.Value;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     /// <inheritdoc />
     public Task<AuthLoginResult> LoginAsync(LoginCommand command, CancellationToken cancellationToken = default)
     {
-        EnsureCancellationNotRequested(cancellationToken);
-        var user = ValidateDemoCredentials(command);
-        return Task.FromResult(CreateLoginResult(user));
+        return LoginInternalAsync(command, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -85,25 +89,28 @@ public sealed class IdentityService : IIdentityService
         ClaimsPrincipal principal,
         CancellationToken cancellationToken = default)
     {
-        EnsureCancellationNotRequested(cancellationToken);
-
-        if (principal.Identity?.IsAuthenticated != true)
-        {
-            return Task.FromResult<AuthUserDto?>(null);
-        }
-
-        var user = CreateUserFromPrincipal(principal);
-        return Task.FromResult<AuthUserDto?>(user);
+        return GetCurrentUserInternalAsync(principal, cancellationToken);
     }
 
-    private AuthUserDto ValidateDemoCredentials(LoginCommand command)
+    private async Task<AuthLoginResult> LoginInternalAsync(
+        LoginCommand command,
+        CancellationToken cancellationToken)
     {
+        EnsureCancellationNotRequested(cancellationToken);
+
         if (!IsValidDemoAccount(command))
         {
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        return CreateDemoUser();
+        var businessUser = await LoadBusinessUserByEmailAsync(command.Email, cancellationToken);
+        if (businessUser is null || !IsActiveUser(businessUser))
+        {
+            throw new UnauthorizedAccessException("Invalid email or password.");
+        }
+
+        var sessionUser = await CreateSessionUserAsync(businessUser, cancellationToken);
+        return CreateLoginResult(sessionUser);
     }
 
     private bool IsValidDemoAccount(LoginCommand command)
@@ -115,17 +122,32 @@ public sealed class IdentityService : IIdentityService
             && string.Equals(password, _options.DemoAccount.Password, StringComparison.Ordinal);
     }
 
-    private AuthUserDto CreateDemoUser()
+    private async Task<AuthUserDto?> GetCurrentUserInternalAsync(
+        ClaimsPrincipal principal,
+        CancellationToken cancellationToken)
     {
-        return new AuthUserDto
+        EnsureCancellationNotRequested(cancellationToken);
+
+        if (principal.Identity?.IsAuthenticated != true)
         {
-            Id = CreateDeterministicUserId(_options.DemoAccount.Email),
-            Email = _options.DemoAccount.Email.Trim(),
-            FullName = _options.DemoAccount.FullName.Trim(),
-            Status = _options.DemoAccount.Status.Trim(),
-            Roles = _options.DemoAccount.Roles,
-            Permissions = _options.DemoAccount.Permissions
-        };
+            return null;
+        }
+
+        var subject = principal.FindFirstValue(JwtRegisteredClaimNames.Sub)
+            ?? principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!Guid.TryParse(subject, out var userId))
+        {
+            return null;
+        }
+
+        var businessUser = await LoadBusinessUserByIdAsync(userId, cancellationToken);
+        if (businessUser is null || !IsActiveUser(businessUser))
+        {
+            return null;
+        }
+
+        return await CreateSessionUserAsync(businessUser, cancellationToken);
     }
 
     private AuthLoginResult CreateLoginResult(AuthUserDto user)
@@ -216,43 +238,69 @@ public sealed class IdentityService : IIdentityService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private AuthUserDto? CreateUserFromPrincipal(ClaimsPrincipal principal)
+    private async Task<AuthUserDto> CreateSessionUserAsync(User user, CancellationToken cancellationToken)
     {
-        var subject = principal.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? principal.FindFirstValue(ClaimTypes.NameIdentifier);
-        var email = principal.FindFirstValue(JwtRegisteredClaimNames.Email) ?? principal.FindFirstValue(ClaimTypes.Email);
-        var fullName = principal.FindFirstValue("name")
-            ?? principal.FindFirstValue(JwtRegisteredClaimNames.UniqueName)
-            ?? principal.FindFirstValue(ClaimTypes.Name)
-            ?? string.Empty;
-        var status = principal.FindFirstValue("status") ?? "ACTIVE";
-
-        if (!Guid.TryParse(subject, out var userId) || string.IsNullOrWhiteSpace(email))
-        {
-            return null;
-        }
-
-        var roles = principal.FindAll(ClaimTypes.Role).Select(claim => claim.Value).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
-        var permissions = principal.FindAll("permission").Select(claim => claim.Value).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        var roles = await LoadRoleNamesAsync(user.Id, cancellationToken);
+        var permissions = await LoadPermissionKeysAsync(user.Id, cancellationToken);
 
         return new AuthUserDto
         {
-            Id = userId,
-            Email = email,
-            FullName = fullName,
-            Status = status,
+            Id = user.Id,
+            Email = user.Email,
+            FullName = user.FullName,
+            Status = user.Status,
             Roles = roles,
             Permissions = permissions
         };
     }
 
-    private static Guid CreateDeterministicUserId(string email)
+    private async Task<User?> LoadBusinessUserByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        var normalizedEmail = email.Trim().ToLowerInvariant();
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(normalizedEmail));
-        Span<byte> guidBytes = stackalloc byte[16];
-        hash.AsSpan(0, 16).CopyTo(guidBytes);
+        using var scope = _serviceScopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var normalizedEmail = email.Trim();
 
-        return new Guid(guidBytes);
+        return await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(user => user.Email == normalizedEmail, cancellationToken);
+    }
+
+    private async Task<User?> LoadBusinessUserByIdAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        return await dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(user => user.Id == userId, cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<string>> LoadRoleNamesAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        return await dbContext.UserRoles
+            .AsNoTracking()
+            .Where(userRole => userRole.UserId == userId)
+            .Select(userRole => userRole.Role.Name)
+            .Distinct()
+            .ToArrayAsync(cancellationToken);
+    }
+
+    private async Task<IReadOnlyList<string>> LoadPermissionKeysAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        return await (
+                from userRole in dbContext.UserRoles.AsNoTracking()
+                join rolePermission in dbContext.RolePermissions.AsNoTracking()
+                    on userRole.RoleId equals rolePermission.RoleId
+                where userRole.UserId == userId
+                select rolePermission.Permission.Key)
+            .Distinct()
+            .ToArrayAsync(cancellationToken);
     }
 
     private static string GenerateRefreshToken()
@@ -273,5 +321,10 @@ public sealed class IdentityService : IIdentityService
         {
             cancellationToken.ThrowIfCancellationRequested();
         }
+    }
+
+    private static bool IsActiveUser(User user)
+    {
+        return string.Equals(user.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase);
     }
 }

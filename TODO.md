@@ -63,20 +63,44 @@
 
 ---
 
+## Naming Convention (Template-wide)
+
+- **Backend entity / class / handler / DTO**: `PascalCase`, số ít.
+  - Ví dụ: `User`, `Role`, `Permission`, `SystemSetting`, `AuditLog`, `File`, `Notification`
+- **Database table**: `snake_case`, số nhiều.
+  - Ví dụ: `users`, `roles`, `permissions`, `system_settings`, `audit_logs`, `files`, `notifications`
+- **Backend feature folder**: `PascalCase`, theo concept/module.
+  - Ví dụ: `Auth`, `Role`, `Permission`, `FileManagement`, `Notification`, `Dashboard`, `Reporting`
+- **Frontend feature folder**: `kebab-case`, theo concept/module.
+  - Ví dụ: `auth`, `role`, `permission`, `file-management`, `notification`, `dashboard`, `reporting`
+- **Controller**: `{Entity}Controller` hoặc `{Concept}Controller`.
+  - Ví dụ: `UsersController`, `RolesController`, `AuthController`
+- **Handler / use case**: `{Verb}{Entity}Handler`.
+  - Ví dụ: `CreateUserHandler`, `UpdateRoleHandler`, `MarkNotificationAsReadHandler`
+- **Repository**: `I{Entity}Repository` và `{Entity}Repository`.
+  - Ví dụ: `IUserRepository`, `UserRepository`
+- **Frontend API client**: `{entity}Api.ts`.
+  - Ví dụ: `userApi.ts`, `roleApi.ts`, `notificationApi.ts`
+- **Frontend hook**: `use{Entities}` hoặc `use{Verb}{Entity}`.
+  - Ví dụ: `useUsers`, `useCreateUser`, `useNotifications`
+- **Frontend schema**: `{action}{Entity}Schema`.
+  - Ví dụ: `createUserSchema`, `updateRoleSchema`, `createFileSchema`
+
+---
+
 ## Phase 3: Triển khai các Module Chung (Core Features)
 
 ### 3.0. Core Entity Foundation
 
-- [ ] **Backend**
-  - [ ] Tạo entity `User` cho bảng `users`.
-  - [ ] Tạo entity `Role` cho bảng `roles`.
-  - [ ] Tạo entity `Permission` cho bảng `permissions`.
-  - [ ] Tạo entity trung gian `UserRole` cho bảng `user_roles`.
-  - [ ] Tạo entity trung gian `RolePermission` cho bảng `role_permissions`.
-  - [ ] Tạo entity `SystemSetting` cho bảng `system_settings`.
-  - [ ] Tạo entity `AuditLog` cho bảng `audit_logs`.
-  - [ ] Tạo EF Core Fluent API mapping cho toàn bộ entity nền tảng.
-  - [ ] Tạo migration đầu tiên cho core tables.
+- [x] **Backend**
+  - [x] Tạo entity `User` cho bảng `users`.
+  - [x] Tạo entity `Role` cho bảng `roles`.
+  - [x] Tạo entity `Permission` cho bảng `permissions`.
+  - [x] Tạo entity trung gian `UserRole` cho bảng `user_roles`.
+  - [x] Tạo entity trung gian `RolePermission` cho bảng `role_permissions`.
+  - [x] Tạo entity `SystemSetting` cho bảng `system_settings`.
+  - [x] Tạo EF Core Fluent API mapping cho toàn bộ entity nền tảng.
+  - [x] Tạo migration đầu tiên cho core tables.
 
 ### 3.1. Module Authentication & User (Platform Feature)
 
@@ -84,7 +108,7 @@
   - [x] Tạo `Template.Core/Features/Auth/`.
   - [x] Tạo `Template.API/CoreFeatures/Auth/`.
   - [x] Tạo `Template.Infrastructure/Auth/`.
-  - [ ] Dùng user nghiệp vụ từ bảng `users`, không tạo model auth tách rời.
+  - [x] Dùng user nghiệp vụ từ bảng `users`, không tạo model auth tách rời.
   - [x] Xử lý `JWT access token`, `refresh token rotation`, `revocation`, và session security.
   - [x] Giữ auth provider ở dạng abstraction.
 - [x] **Frontend**
