@@ -56,11 +56,11 @@ function JsonPanel({
   value: unknown;
 }): ReactElement {
   return (
-    <div className="rounded-lg border border-slate-200 bg-slate-50">
-      <div className="border-b border-slate-200 px-4 py-3">
-        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+    <div className="overflow-hidden rounded-xl border border-border bg-muted/40">
+      <div className="border-b border-border px-4 py-3">
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       </div>
-      <pre className="max-h-[60vh] overflow-auto whitespace-pre-wrap break-words px-4 py-4 text-xs text-slate-700">
+      <pre className="max-h-[60vh] overflow-auto whitespace-pre-wrap break-words px-4 py-4 text-xs text-muted-foreground">
         {formatJsonValue(value)}
       </pre>
     </div>

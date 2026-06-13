@@ -31,7 +31,7 @@ export function DashboardPage(): ReactElement {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Dashboard</h1>
-          <p className="text-sm text-slate-600">Base layout and table scaffold.</p>
+          <p className="text-sm text-muted-foreground">Base layout and table scaffold.</p>
         </div>
 
         <Button>Add item</Button>

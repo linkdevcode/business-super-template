@@ -1,0 +1,36 @@
+---
+description: UI system and experience polish rules for the frontend template
+globs: frontend/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# UI System & Experience Polish
+
+## Purpose
+Keep the frontend looking polished, reusable, and product-ready while preserving the template's feature-based structure.
+
+## Theme
+- Use `shadcn/ui` theme tokens with CSS variables as the visual foundation.
+- Prefer `zinc`, `slate`, or `stone` palettes.
+- Support Dark / Light mode with `next-themes` or an equivalent theme context.
+- Avoid hardcoded black / white surfaces where theme tokens already exist.
+
+## App Shell
+- Prefer a professional admin shell: collapsible sidebar, sticky header, route breadcrumb, and profile dropdown.
+- Use glassmorphism lightly and only when readability remains strong.
+- Keep active, hover, and group states clear and consistent.
+
+## Motion and States
+- Use Framer Motion sparingly for route/page transitions and subtle entry animations.
+- Prefer skeletons and smooth state transitions over heavy loaders.
+- Empty states should be minimal, reusable, and easy to scan.
+
+## Components
+- Improve shared UI like `DataTable`, inputs, buttons, dialogs, and forms with consistent rings, shadows, spacing, and responsive behavior.
+- Favor reusable shared components over one-off page styling.
+
+## Forbidden
+- No heavy animation that hurts perceived performance.
+- No decorative effects that reduce readability.
+- No page-specific UI patterns when a shared component can cover the case.
+

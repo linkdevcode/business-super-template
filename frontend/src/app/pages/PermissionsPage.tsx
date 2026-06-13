@@ -31,7 +31,7 @@ export function PermissionsPage(): ReactElement {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Permissions</h1>
-          <p className="text-sm text-slate-600">Scaffold for permission protected routes.</p>
+          <p className="text-sm text-muted-foreground">Scaffold for permission protected routes.</p>
         </div>
 
         <Button variant="secondary">Refresh</Button>

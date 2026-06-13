@@ -4,6 +4,7 @@ import type { ReactElement } from "react";
 import { AuthProvider } from "../features/auth";
 import { NotificationHubBridge } from "../features/notification";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "next-themes";
 
 type AppProvidersProps = {
   children: ReactNode;
@@ -27,12 +28,20 @@ export function AppProviders({ children }: AppProvidersProps): ReactElement {
   const [queryClient] = useState(createQueryClient);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <NotificationHubBridge />
-        {children}
-      </AuthProvider>
-      <Toaster richColors position="top-right" closeButton />
-    </QueryClientProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+      storageKey="my-super-template-theme"
+    >
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <NotificationHubBridge />
+          {children}
+        </AuthProvider>
+        <Toaster richColors position="top-right" closeButton theme="system" />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

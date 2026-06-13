@@ -24,8 +24,8 @@ export function PermissionTree({
   return (
     <div className="space-y-4">
       {permissionGroups.map((group) => (
-        <div key={group.group} className="rounded-lg border border-slate-200 p-4">
-          <h3 className="mb-3 text-sm font-semibold text-slate-900">{group.group}</h3>
+        <div key={group.group} className="rounded-2xl border border-border p-4 shadow-sm">
+          <h3 className="mb-3 text-sm font-semibold text-foreground">{group.group}</h3>
           <div className="grid gap-3 md:grid-cols-2">
             {group.permissions.map((permission) => {
               const isChecked = selectedPermissionIds.includes(permission.id);
@@ -33,19 +33,19 @@ export function PermissionTree({
               return (
                 <label
                   key={permission.id}
-                  className="flex cursor-pointer items-start gap-3 rounded-md border border-slate-100 bg-slate-50 p-3"
+                  className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:bg-accent"
                 >
                   <input
                     type="checkbox"
-                    className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400"
+                    className="mt-1 h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
                     checked={isChecked}
                     onChange={() => togglePermission(permission.id)}
                   />
                   <span className="space-y-1">
-                    <span className="block text-sm font-medium text-slate-900">{permission.name}</span>
-                    <span className="block text-xs text-slate-500">{permission.key}</span>
+                    <span className="block text-sm font-medium text-foreground">{permission.name}</span>
+                    <span className="block text-xs text-muted-foreground">{permission.key}</span>
                     {permission.description ? (
-                      <span className="block text-xs text-slate-600">{permission.description}</span>
+                      <span className="block text-xs text-muted-foreground">{permission.description}</span>
                     ) : null}
                   </span>
                 </label>

@@ -14,9 +14,9 @@ type TableCellProps = TdHTMLAttributes<HTMLTableCellElement> & {
 /** Summary: Basic reusable table component. */
 export function Table({ className = "", ...props }: TableProps): ReactElement {
   return (
-    <div className="w-full overflow-x-auto rounded-lg border border-slate-200 bg-white">
+    <div className="w-full overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
       <table
-        className={["w-full border-collapse text-sm", className].filter(Boolean).join(" ")}
+        className={["w-full border-collapse text-sm text-foreground", className].filter(Boolean).join(" ")}
         {...props}
       />
     </div>
@@ -35,14 +35,14 @@ export function TableBody({ className = "", ...props }: TableSectionProps): Reac
 
 /** Summary: Table row. */
 export function TableRow({ className = "", ...props }: TableRowProps): ReactElement {
-  return <tr className={["border-b border-slate-100", className].filter(Boolean).join(" ")} {...props} />;
+  return <tr className={["border-b border-border/70 transition-colors hover:bg-muted/50", className].filter(Boolean).join(" ")} {...props} />;
 }
 
 /** Summary: Table header cell. */
 export function TableHeaderCell({ className = "", ...props }: TableCellProps): ReactElement {
   return (
     <th
-      className={["px-4 py-3 text-left font-medium text-slate-600", className]
+      className={["px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground", className]
         .filter(Boolean)
         .join(" ")}
       {...props}
@@ -53,7 +53,7 @@ export function TableHeaderCell({ className = "", ...props }: TableCellProps): R
 /** Summary: Table data cell. */
 export function TableCell({ className = "", children, ...props }: TableCellProps): ReactElement {
   return (
-    <td className={["px-4 py-3 text-slate-700", className].filter(Boolean).join(" ")} {...props}>
+    <td className={["px-4 py-3 text-sm text-foreground", className].filter(Boolean).join(" ")} {...props}>
       {children}
     </td>
   );

@@ -73,7 +73,7 @@ export function SystemSettingsPage(): ReactElement {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">System Settings</h1>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted-foreground">
             Configure application, mail, and branding settings from a single JSON payload.
           </p>
         </div>
@@ -86,23 +86,23 @@ export function SystemSettingsPage(): ReactElement {
       </div>
 
       {systemSettingsQuery.isLoading ? (
-        <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600">
+        <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-sm">
           Loading system settings...
         </div>
       ) : null}
 
       {systemSettingsQuery.isError ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+        <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-6 text-sm text-destructive">
           {systemSettingsQuery.error.message}
         </div>
       ) : null}
 
       {systemSettingsQuery.data ? (
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="mb-4">
               <h2 className="text-lg font-semibold">Application</h2>
-              <p className="text-sm text-slate-500">Main application metadata and endpoints.</p>
+              <p className="text-sm text-muted-foreground">Main application metadata and endpoints.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -121,10 +121,10 @@ export function SystemSettingsPage(): ReactElement {
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="mb-4">
               <h2 className="text-lg font-semibold">Mail</h2>
-              <p className="text-sm text-slate-500">SMTP settings used by the backend email provider.</p>
+              <p className="text-sm text-muted-foreground">SMTP settings used by the backend email provider.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -150,20 +150,20 @@ export function SystemSettingsPage(): ReactElement {
                 <input
                   id="mail.enableSsl"
                   type="checkbox"
-                  className="h-4 w-4 rounded border-slate-300 text-slate-900"
+                  className="h-4 w-4 rounded border-input text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
                   {...register("mail.enableSsl")}
                 />
-                <label htmlFor="mail.enableSsl" className="text-sm font-medium text-slate-700">
+                <label htmlFor="mail.enableSsl" className="text-sm font-medium text-foreground">
                   Enable SSL/TLS
                 </label>
               </div>
             </div>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="mb-4">
               <h2 className="text-lg font-semibold">Branding</h2>
-              <p className="text-sm text-slate-500">Public-facing visual identity and support contact.</p>
+              <p className="text-sm text-muted-foreground">Public-facing visual identity and support contact.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -195,9 +195,9 @@ function Field({
 }): ReactElement {
   return (
     <label className="space-y-2">
-      <span className="block text-sm font-medium text-slate-700">{label}</span>
+      <span className="block text-sm font-medium text-foreground">{label}</span>
       {children}
-      {error ? <span className="block text-xs text-red-600">{error}</span> : null}
+      {error ? <span className="block text-xs text-destructive">{error}</span> : null}
     </label>
   );
 }

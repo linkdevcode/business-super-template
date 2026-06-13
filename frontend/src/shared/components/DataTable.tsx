@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -10,6 +10,8 @@ import {
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./ui/Table";
+import { Skeleton } from "./ui/Skeleton";
+import { EmptyState } from "./EmptyState";
 
 type DataTableProps<TData> = {
   columns: Array<ColumnDef<TData, unknown>>;
@@ -25,7 +27,9 @@ type DataTableProps<TData> = {
   onSortingChange?: OnChangeFn<SortingState>;
   onPageIndexChange?: (pageIndex: number) => void;
   onPageSizeChange?: (pageSize: number) => void;
-  emptyMessage?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  emptyAction?: ReactNode;
 };
 
 /** Summary: Generic table component for CRUD lists. */
@@ -43,7 +47,9 @@ export function DataTable<TData>({
   onSortingChange,
   onPageIndexChange,
   onPageSizeChange,
-  emptyMessage = "No records found.",
+  emptyTitle = "No records found",
+  emptyDescription = "Try adjusting your filters or create a new record to get started.",
+  emptyAction = null,
 }: DataTableProps<TData>): ReactElement {
   const table = useReactTable({
     data,
@@ -62,6 +68,8 @@ export function DataTable<TData>({
     onSortingChange,
   });
 
+  const visibleRows = table.getRowModel().rows;
+
   return (
     <div className="space-y-4">
       {onSearchValueChange ? (
@@ -70,7 +78,7 @@ export function DataTable<TData>({
             value={searchValue ?? ""}
             onChange={(event) => onSearchValueChange(event.target.value)}
             placeholder="Search..."
-            className="max-w-sm"
+            className="max-w-sm bg-card"
           />
         </div>
       ) : null}
@@ -92,14 +100,20 @@ export function DataTable<TData>({
 
         <TableBody>
           {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={columns.length}>Loading...</TableCell>
-            </TableRow>
-          ) : table.getRowModel().rows.length > 0 ? (
-            table.getRowModel().rows.map((row) => (
+            Array.from({ length: 5 }).map((_, rowIndex) => (
+              <TableRow key={`skeleton-row-${rowIndex}`}>
+                {columns.map((_, columnIndex) => (
+                  <TableCell key={`skeleton-cell-${rowIndex}-${columnIndex}`}>
+                    <Skeleton className={columnIndex === 0 ? "h-4 w-4/5" : "h-4 w-full"} />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : visibleRows.length > 0 ? (
+            visibleRows.map((row) => (
               <TableRow
                 key={row.id}
-                className={onRowClick ? "cursor-pointer hover:bg-slate-50" : undefined}
+                className={onRowClick ? "cursor-pointer" : undefined}
                 onClick={() => onRowClick?.(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
@@ -111,7 +125,14 @@ export function DataTable<TData>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length}>{emptyMessage}</TableCell>
+              <TableCell colSpan={columns.length} className="p-6">
+                <EmptyState
+                  title={emptyTitle}
+                  description={emptyDescription}
+                  action={emptyAction}
+                  className="border-0 bg-transparent px-0 py-0 shadow-none"
+                />
+              </TableCell>
             </TableRow>
           )}
         </TableBody>
@@ -119,7 +140,7 @@ export function DataTable<TData>({
 
       {onPageIndexChange || onPageSizeChange ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="text-sm text-slate-600">
+          <div className="text-sm text-muted-foreground">
             Page {pageIndex + 1} of {Math.max(pageCount, 1)}
           </div>
           <div className="flex items-center gap-2">
@@ -143,7 +164,7 @@ export function DataTable<TData>({
             ) : null}
             {onPageSizeChange ? (
               <select
-                className="h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+                className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 value={pageSize}
                 onChange={(event) => onPageSizeChange(Number(event.target.value))}
               >

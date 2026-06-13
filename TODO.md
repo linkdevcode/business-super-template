@@ -169,6 +169,16 @@
   - [x] Tạo trang Cấu hình hệ thống (System Settings Page) tự động ánh xạ cấu hình dạng JSON nhận từ API thành các trường nhập liệu trực quan (Mail SMTP, cấu hình app...).
   - [x] Tạo trang Nhật ký hệ thống (Audit Log Viewer) hiển thị danh sách và chi tiết lịch sử thay đổi dạng trước/sau (Before / After Data) trực quan cho Admin.
 
+### 3.6. UI System & Experience Polish (Template Experience)
+
+- [x] **Frontend**
+  - [x] Chuẩn hóa theme system cho toàn bộ template bằng `shadcn/ui` tokens + CSS variables, ưu tiên palette `zinc` / `slate` / `stone`.
+  - [x] Tích hợp `next-themes` để hỗ trợ Dark / Light mode mượt mà, đồng bộ transition cho toàn hệ thống giao diện.
+  - [x] Tái cấu trúc `AdminLayout` theo hướng chuyên nghiệp: sidebar collapsible, header sticky/glass nhẹ, breadcrumb theo route, user profile dropdown.
+  - [x] Thêm hiệu ứng động tinh tế bằng Framer Motion cho route transitions, page enter/exit, và các interaction chính yếu.
+  - [x] Nâng cấp `<DataTable />`, form, input, button, dialog, empty state, skeleton loading để tạo cảm giác product-ready và thống nhất.
+  - [x] Chuẩn hóa spacing, typography, focus ring, shadow, active state, responsive behavior để template nhìn hoàn chỉnh hơn.
+
 ---
 
 ## Phase 4: Đóng gói Template & Kiểm tra Deploy (0đ)

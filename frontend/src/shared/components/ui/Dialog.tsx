@@ -27,13 +27,13 @@ export function Dialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm"
       role="presentation"
       onClick={() => onOpenChange(false)}
     >
       <div
         className={[
-          "w-full max-w-lg rounded-lg bg-white p-6 shadow-xl",
+          "w-full max-w-lg rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl",
           contentClassName,
         ]
           .filter(Boolean)
@@ -56,12 +56,12 @@ export function DialogHeader({ children }: DialogSectionProps): ReactElement {
 
 /** Summary: Dialog title element. */
 export function DialogTitle({ children }: DialogSectionProps): ReactElement {
-  return <h2 className="text-lg font-semibold text-slate-900">{children}</h2>;
+  return <h2 className="text-lg font-semibold text-foreground">{children}</h2>;
 }
 
 /** Summary: Dialog description element. */
 export function DialogDescription({ children }: DialogSectionProps): ReactElement {
-  return <p className="text-sm text-slate-600">{children}</p>;
+  return <p className="text-sm text-muted-foreground">{children}</p>;
 }
 
 /** Summary: Dialog footer area. */

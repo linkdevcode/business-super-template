@@ -1,10 +1,13 @@
 import type { ReactElement } from "react";
+import { EmptyState } from "../../shared/components/EmptyState";
 /** Summary: Permission denied screen scaffold. */
 export function ForbiddenPage(): ReactElement {
   return (
-    <section className="space-y-2 text-center">
-      <h1 className="text-2xl font-semibold">Forbidden</h1>
-      <p className="text-sm text-slate-600">You do not have permission to view this page.</p>
+    <section className="mx-auto max-w-xl">
+      <EmptyState
+        title="Forbidden"
+        description="You do not have permission to view this page."
+      />
     </section>
   );
 }

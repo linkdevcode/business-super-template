@@ -40,7 +40,7 @@ export function LoginPage(): ReactElement {
     <section className="space-y-6">
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-semibold">Sign in</h1>
-        <p className="text-sm text-slate-300">Use your account to access the admin area.</p>
+        <p className="text-sm text-muted-foreground">Use your account to access the admin area.</p>
       </div>
 
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
@@ -49,7 +49,7 @@ export function LoginPage(): ReactElement {
             Email
           </label>
           <Input id="email" type="email" placeholder="you@example.com" {...register("email")} />
-          {errors.email ? <p className="text-sm text-red-300">{errors.email.message}</p> : null}
+          {errors.email ? <p className="text-sm text-destructive">{errors.email.message}</p> : null}
         </div>
 
         <div className="space-y-2">
@@ -57,13 +57,13 @@ export function LoginPage(): ReactElement {
             Password
           </label>
           <Input id="password" type="password" placeholder="••••••••" {...register("password")} />
-          {errors.password ? <p className="text-sm text-red-300">{errors.password.message}</p> : null}
+          {errors.password ? <p className="text-sm text-destructive">{errors.password.message}</p> : null}
         </div>
 
-        {submitError ? <p className="text-sm text-red-300">{submitError}</p> : null}
+        {submitError ? <p className="text-sm text-destructive">{submitError}</p> : null}
 
         {import.meta.env.DEV ? (
-          <p className="rounded-md bg-slate-800 px-3 py-2 text-xs text-slate-300">
+          <p className="rounded-lg border border-border bg-muted px-3 py-2 text-xs text-muted-foreground">
             Demo account: <span className="font-medium">admin@example.com</span> /{" "}
             <span className="font-medium">Password123!</span>
           </p>

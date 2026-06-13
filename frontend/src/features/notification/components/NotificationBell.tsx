@@ -32,8 +32,10 @@ function NotificationItem({ notification, onRead }: NotificationItemProps): Reac
   return (
     <div
       className={[
-        "rounded-lg border p-3 transition-colors",
-        notification.isRead ? "border-slate-200 bg-white" : "border-sky-200 bg-sky-50",
+        "rounded-xl border p-3 transition-colors",
+        notification.isRead
+          ? "border-border bg-card"
+          : "border-primary/20 bg-primary/5",
       ].join(" ")}
     >
       <button
@@ -44,14 +46,14 @@ function NotificationItem({ notification, onRead }: NotificationItemProps): Reac
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1 space-y-1">
             <div className="flex items-center gap-2">
-              <p className="truncate text-sm font-semibold text-slate-900">{notification.title}</p>
+              <p className="truncate text-sm font-semibold text-foreground">{notification.title}</p>
               {!notification.isRead ? (
-                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-sky-500" aria-hidden="true" />
+                <span className="inline-flex h-2.5 w-2.5 rounded-full bg-primary" aria-hidden="true" />
               ) : null}
             </div>
-            <p className="text-sm leading-5 text-slate-600">{notification.content}</p>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
-              <span className="rounded-full bg-slate-100 px-2 py-1 font-medium uppercase tracking-wide text-slate-600">
+            <p className="text-sm leading-5 text-muted-foreground">{notification.content}</p>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span className="rounded-full bg-muted px-2 py-1 font-medium uppercase tracking-wide text-foreground">
                 {notification.type}
               </span>
               <span>{formatNotificationTime(notification.createdAt)}</span>
@@ -155,18 +157,18 @@ export function NotificationBell(): ReactElement {
       >
         <NotificationIcon />
         {unreadCount > 0 ? (
-          <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-red-600 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+          <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold text-destructive-foreground">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}
       </Button>
 
       {isOpen ? (
-        <div className="absolute right-0 top-12 z-50 w-[22rem] rounded-xl border border-slate-200 bg-white shadow-xl">
-          <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+        <div className="absolute right-0 top-12 z-50 w-[22rem] rounded-2xl border border-border bg-popover shadow-2xl">
+          <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <div>
-              <p className="text-sm font-semibold text-slate-900">Notifications</p>
-              <p className="text-xs text-slate-500">Latest activity for your account</p>
+              <p className="text-sm font-semibold text-foreground">Notifications</p>
+              <p className="text-xs text-muted-foreground">Latest activity for your account</p>
             </div>
             <Button
               variant="ghost"
@@ -180,13 +182,13 @@ export function NotificationBell(): ReactElement {
 
           <div ref={scrollContainerRef} className="max-h-[28rem] overflow-y-auto p-3">
             {notificationsQuery.isError ? (
-              <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+              <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
                 Failed to load notifications.
               </div>
             ) : notificationsQuery.isLoading ? (
               <div className="space-y-2">
-                <div className="h-16 animate-pulse rounded-lg bg-slate-100" />
-                <div className="h-16 animate-pulse rounded-lg bg-slate-100" />
+                <div className="h-16 animate-pulse rounded-xl bg-muted" />
+                <div className="h-16 animate-pulse rounded-xl bg-muted" />
               </div>
             ) : notifications.length > 0 ? (
               <div className="space-y-2">
@@ -195,15 +197,15 @@ export function NotificationBell(): ReactElement {
                 ))}
                 <div ref={sentinelRef} className="h-6" aria-hidden="true" />
                 {notificationsQuery.isFetchingNextPage ? (
-                  <p className="pb-1 text-center text-xs text-slate-500">Loading more...</p>
+                  <p className="pb-1 text-center text-xs text-muted-foreground">Loading more...</p>
                 ) : notificationsQuery.hasNextPage ? (
-                  <p className="pb-1 text-center text-xs text-slate-500">Scroll to load more</p>
+                  <p className="pb-1 text-center text-xs text-muted-foreground">Scroll to load more</p>
                 ) : (
-                  <p className="pb-1 text-center text-xs text-slate-500">You have reached the end.</p>
+                  <p className="pb-1 text-center text-xs text-muted-foreground">You have reached the end.</p>
                 )}
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500">
+              <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
                 No notifications yet.
               </div>
             )}

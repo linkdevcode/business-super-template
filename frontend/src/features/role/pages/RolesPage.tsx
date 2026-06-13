@@ -109,13 +109,13 @@ export function RolesPage(): ReactElement {
       header: "Permissions",
       cell: ({ row }) => (
         <div className="space-y-1">
-          <div className="text-sm font-medium text-slate-900">
+          <div className="text-sm font-medium text-foreground">
             {row.original.permissionCount} permission(s)
           </div>
           {row.original.permissionKeys.length > 0 ? (
-            <div className="text-xs text-slate-500">{row.original.permissionKeys.join(", ")}</div>
+            <div className="text-xs text-muted-foreground">{row.original.permissionKeys.join(", ")}</div>
           ) : (
-            <div className="text-xs text-slate-500">No permissions</div>
+            <div className="text-xs text-muted-foreground">No permissions</div>
           )}
         </div>
       ),
@@ -153,7 +153,7 @@ export function RolesPage(): ReactElement {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Roles</h1>
-          <p className="text-sm text-slate-600">Manage RBAC roles and assign permissions.</p>
+          <p className="text-sm text-muted-foreground">Manage RBAC roles and assign permissions.</p>
         </div>
 
         <HasPermission permission={PERMISSION_KEYS.Role.Create}>
@@ -178,7 +178,8 @@ export function RolesPage(): ReactElement {
           setPageSize(nextPageSize);
           setPageIndex(0);
         }}
-        emptyMessage="No roles found."
+        emptyTitle="No roles found"
+        emptyDescription="Try changing the search term or create a new role."
       />
 
       <Dialog open={dialogMode !== null} onOpenChange={(open) => (!open ? closeDialog() : undefined)}>

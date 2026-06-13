@@ -65,7 +65,7 @@ export function AuditLogViewerPage(): ReactElement {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Audit Log Viewer</h1>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-muted-foreground">
             Review history with filters by table name, user, and action.
           </p>
         </div>
@@ -84,9 +84,9 @@ export function AuditLogViewerPage(): ReactElement {
         </Button>
       </div>
 
-      <div className="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-3">
+      <div className="grid gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm md:grid-cols-3">
         <label className="space-y-2">
-          <span className="block text-sm font-medium text-slate-700">Table Name</span>
+          <span className="block text-sm font-medium text-foreground">Table Name</span>
           <Input
             value={tableName}
             onChange={(event) => {
@@ -98,7 +98,7 @@ export function AuditLogViewerPage(): ReactElement {
         </label>
 
         <label className="space-y-2">
-          <span className="block text-sm font-medium text-slate-700">User ID</span>
+          <span className="block text-sm font-medium text-foreground">User ID</span>
           <Input
             value={userId}
             onChange={(event) => {
@@ -107,13 +107,13 @@ export function AuditLogViewerPage(): ReactElement {
             }}
             placeholder="UUID"
           />
-          <span className="block text-xs text-slate-500">Enter a valid UUID to filter by actor.</span>
+          <span className="block text-xs text-muted-foreground">Enter a valid UUID to filter by actor.</span>
         </label>
 
         <label className="space-y-2">
-          <span className="block text-sm font-medium text-slate-700">Action</span>
+          <span className="block text-sm font-medium text-foreground">Action</span>
           <select
-            className="h-10 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             value={action}
             onChange={(event) => {
               setAction(event.target.value as AuditLogAction | "");
@@ -141,7 +141,8 @@ export function AuditLogViewerPage(): ReactElement {
           setPageIndex(0);
         }}
         onRowClick={setSelectedLog}
-        emptyMessage="No audit logs found."
+        emptyTitle="No audit logs found"
+        emptyDescription="Try widening the filters or clear the search fields."
       />
 
       <AuditLogDetailDialog

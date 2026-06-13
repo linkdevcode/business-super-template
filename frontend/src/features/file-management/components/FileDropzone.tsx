@@ -99,8 +99,8 @@ export function FileDropzone({
     <div className={["space-y-4", className].filter(Boolean).join(" ")}>
       <div
         className={[
-          "rounded-xl border border-dashed p-6 transition-colors",
-          isDragging ? "border-slate-900 bg-slate-50" : "border-slate-300 bg-white",
+          "rounded-2xl border border-dashed p-6 transition-colors",
+          isDragging ? "border-primary bg-muted/60" : "border-border bg-card",
           disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
         ]
           .filter(Boolean)
@@ -124,10 +124,10 @@ export function FileDropzone({
         }}
       >
         <div className="space-y-2 text-center">
-          <h3 className="text-base font-semibold text-slate-900">{title}</h3>
-          <p className="text-sm text-slate-600">{description}</p>
+          <h3 className="text-base font-semibold text-foreground">{title}</h3>
+          <p className="text-sm text-muted-foreground">{description}</p>
           {selectedFileName ? (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               Selected: {selectedFileName}
               {selectedFileSize !== null ? ` (${formatBytes(selectedFileSize)})` : ""}
             </p>
@@ -157,19 +157,19 @@ export function FileDropzone({
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs text-slate-500">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Progress</span>
           <span>{progress}%</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className="h-full rounded-full bg-slate-900 transition-[width] duration-200 ease-out"
+            className="h-full rounded-full bg-primary transition-[width] duration-200 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
-      {statusMessage ? <p className="text-sm text-slate-600">{statusMessage}</p> : null}
+      {statusMessage ? <p className="text-sm text-muted-foreground">{statusMessage}</p> : null}
     </div>
   );
 }

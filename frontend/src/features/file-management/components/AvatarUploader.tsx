@@ -87,8 +87,8 @@ export function AvatarUploader({
     <div className={["space-y-4", className].filter(Boolean).join(" ")}>
       <div
         className={[
-          "flex flex-col items-center gap-4 rounded-xl border border-dashed p-6 transition-colors",
-          isDragging ? "border-slate-900 bg-slate-50" : "border-slate-300 bg-white",
+          "flex flex-col items-center gap-4 rounded-2xl border border-dashed p-6 transition-colors",
+          isDragging ? "border-primary bg-muted/60" : "border-border bg-card",
           disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
         ]
           .filter(Boolean)
@@ -112,16 +112,16 @@ export function AvatarUploader({
         }}
       >
         <div className="flex flex-col items-center gap-3">
-          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+          <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-border bg-muted">
             {previewUrl ? (
               <img src={previewUrl} alt={alt} className="h-full w-full object-cover" />
             ) : (
-              <span className="text-sm font-medium text-slate-500">Avatar</span>
+              <span className="text-sm font-medium text-muted-foreground">Avatar</span>
             )}
           </div>
           <div className="text-center">
-            <h3 className="text-base font-semibold text-slate-900">Upload avatar</h3>
-            <p className="text-sm text-slate-600">Click or drag an image to replace the current avatar.</p>
+            <h3 className="text-base font-semibold text-foreground">Upload avatar</h3>
+            <p className="text-sm text-muted-foreground">Click or drag an image to replace the current avatar.</p>
           </div>
         </div>
 
@@ -149,19 +149,19 @@ export function AvatarUploader({
       </div>
 
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs text-slate-500">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Progress</span>
           <span>{progress}%</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className="h-full rounded-full bg-slate-900 transition-[width] duration-200 ease-out"
+            className="h-full rounded-full bg-primary transition-[width] duration-200 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
-      {statusMessage ? <p className="text-sm text-slate-600">{statusMessage}</p> : null}
+      {statusMessage ? <p className="text-sm text-muted-foreground">{statusMessage}</p> : null}
     </div>
   );
 }
