@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { Button } from "../../shared/components/ui/Button";
 import { HasPermission, useCurrentUser } from "../../features/auth";
+import { NotificationBell } from "../../features/notification";
 import { PERMISSION_KEYS } from "../../features/permission";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }): string =>
@@ -50,9 +50,7 @@ export function AdminLayout(): ReactElement {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button variant="secondary" aria-label="Notifications">
-                Bell
-              </Button>
+              <NotificationBell />
               <Link
                 to="/logout"
                 className="inline-flex h-10 items-center justify-center rounded-md bg-slate-100 px-4 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-200"

@@ -5,6 +5,7 @@ using Template.Core.Common.Interfaces;
 using Template.Core.Common.Models;
 using FileEntity = Template.Core.Entities.File;
 using Template.Core.Entities;
+using NotificationEntity = Template.Core.Entities.Notification;
 using System.Text.Json;
 
 namespace Template.Infrastructure.Persistence;
@@ -40,6 +41,9 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     /// <summary>Gets the file metadata set.</summary>
     public DbSet<FileEntity> Files => Set<FileEntity>();
+
+    /// <summary>Gets the notification set.</summary>
+    public DbSet<NotificationEntity> Notifications => Set<NotificationEntity>();
 
     /// <inheritdoc />
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

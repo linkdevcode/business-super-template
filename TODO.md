@@ -153,22 +153,22 @@ Upload file là một tác vụ mất thời gian. Khi viết API client trong f
 
 ### 3.5. Module Notification (Real-time Thông báo)
 
-- [ ] **Backend**
-  - [ ] Tạo thực thể `Notification` cho bảng `notifications`.
-  - [ ] Triển khai lớp `NotificationHub` kế thừa từ `Hub` của SignalR:
-    - [ ] Override hai hàm `OnConnectedAsync` và `OnDisconnectedAsync` để tự động ánh xạ (map) giữa `Context.User.GetUserId()` (bóc tách từ JWT Token) với `ConnectionId` tương ứng của trình duyệt.
-    - [ ] Đảm bảo cơ chế gửi thông báo nhắm chính xác đích danh user qua: `_hubContext.Clients.User(userId.ToString()).SendAsync(...)`.
-  - [ ] Triển khai luồng xử lý đồng bộ giữa Database và Real-time khi có sự kiện thông báo (`CreateNotification`):
-    - [ ] **Bước 1:** Ghi một bản ghi mới chứa đầy đủ Metadata vào bảng `notifications` trong cơ sở dữ liệu để lưu vết lịch sử tra cứu sau này.
-    - [ ] **Bước 2:** Gọi qua `IHubContext` để kích hoạt một sự kiện WebSockets hạ tầng xuống chính xác Client của User liên quan (nếu họ đang trực tuyến) để hiển thị giao diện lập tức.
-  - [ ] Xây dựng hoàn chỉnh các Use Cases: `CreateNotification`, `MarkAsRead`, `MarkAllAsRead`, `GetMyNotifications`.
+- [x] **Backend**
+  - [x] Tạo thực thể `Notification` cho bảng `notifications`.
+  - [x] Triển khai lớp `NotificationHub` kế thừa từ `Hub` của SignalR:
+    - [x] Override hai hàm `OnConnectedAsync` và `OnDisconnectedAsync` để tự động ánh xạ (map) giữa `Context.User.GetUserId()` (bóc tách từ JWT Token) với `ConnectionId` tương ứng của trình duyệt.
+    - [x] Đảm bảo cơ chế gửi thông báo nhắm chính xác đích danh user qua: `_hubContext.Clients.User(userId.ToString()).SendAsync(...)`.
+  - [x] Triển khai luồng xử lý đồng bộ giữa Database và Real-time khi có sự kiện thông báo (`CreateNotification`):
+    - [x] **Bước 1:** Ghi một bản ghi mới chứa đầy đủ Metadata vào bảng `notifications` trong cơ sở dữ liệu để lưu vết lịch sử tra cứu sau này.
+    - [x] **Bước 2:** Gọi qua `IHubContext` để kích hoạt một sự kiện WebSockets hạ tầng xuống chính xác Client của User liên quan (nếu họ đang trực tuyến) để hiển thị giao diện lập tức.
+  - [x] Xây dựng hoàn chỉnh các Use Cases: `CreateNotification`, `MarkAsRead`, `MarkAllAsRead`, `GetMyNotifications`.
 
-- [ ] **Frontend**
-  - [ ] Tạo cấu trúc thư mục tính năng `frontend/src/features/notification/`.
-  - [ ] Quản lý kết nối bền bỉ (Resilient Connection) với SignalR Server:
-    - [ ] Khởi tạo SignalR Client ở cấp độ **App Provider** hoặc **Global Context** (chỉ cho phép thiết lập cổng kết nối ngầm sau khi người dùng xác thực thành công).
-    - [ ] Cấu hình bắt buộc cơ chế tự động kết nối lại `.withAutomaticReconnect()` để phòng ngừa các sự cố rớt mạng cục bộ hoặc máy chủ khởi động lại, tránh tình trạng chết kết nối ngầm.
-  - [ ] Kết nối hoàn chỉnh SignalR client với UI "Quả chuông thông báo" và Toast Component để đẩy trải nghiệm thời gian thực lên giao diện một cách mượt mà.
+- [x] **Frontend**
+  - [x] Tạo cấu trúc thư mục tính năng `frontend/src/features/notification/`.
+  - [x] Quản lý kết nối bền bỉ (Resilient Connection) với SignalR Server:
+    - [x] Khởi tạo SignalR Client ở cấp độ **App Provider** hoặc **Global Context** (chỉ cho phép thiết lập cổng kết nối ngầm sau khi người dùng xác thực thành công).
+    - [x] Cấu hình bắt buộc cơ chế tự động kết nối lại `.withAutomaticReconnect()` để phòng ngừa các sự cố rớt mạng cục bộ hoặc máy chủ khởi động lại, tránh tình trạng chết kết nối ngầm.
+  - [x] Kết nối hoàn chỉnh SignalR client với UI "Quả chuông thông báo" và Toast Component để đẩy trải nghiệm thời gian thực lên giao diện một cách mượt mà.
 
 ### 3.5. Module Dashboard (Bảng Điều Khiển Tổng Quan)
 

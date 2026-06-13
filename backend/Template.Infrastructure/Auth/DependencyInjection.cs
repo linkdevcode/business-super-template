@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Template.Core.Features.Auth;
+using Template.Infrastructure.Notifications;
 
 namespace Template.Infrastructure.Auth;
 
@@ -40,6 +42,20 @@ public static class DependencyInjection
             {
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = false;
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        if (!string.IsNullOrWhiteSpace(accessToken)
+                            && context.HttpContext.Request.Path.StartsWithSegments("/hubs/notifications"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -54,6 +70,8 @@ public static class DependencyInjection
                     RoleClaimType = System.Security.Claims.ClaimTypes.Role
                 };
             });
+
+        services.AddSingleton<IUserIdProvider, JwtUserIdProvider>();
 
         return services;
     }

@@ -2,6 +2,8 @@ import { type ReactNode, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { AuthProvider } from "../features/auth";
+import { NotificationHubBridge } from "../features/notification";
+import { Toaster } from "sonner";
 
 type AppProvidersProps = {
   children: ReactNode;
@@ -26,7 +28,11 @@ export function AppProviders({ children }: AppProvidersProps): ReactElement {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <NotificationHubBridge />
+        {children}
+      </AuthProvider>
+      <Toaster richColors position="top-right" closeButton />
     </QueryClientProvider>
   );
 }
