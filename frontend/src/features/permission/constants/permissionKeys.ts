@@ -14,6 +14,13 @@ export const PERMISSION_KEYS = {
     Update: "File.Update",
     Delete: "File.Delete",
   },
+  SystemSetting: {
+    Read: "SystemSetting.Read",
+    Update: "SystemSetting.Update",
+  },
+  AuditLog: {
+    Read: "AuditLog.Read",
+  },
 } as const;
 
 export type PermissionKey =
@@ -25,4 +32,7 @@ export type PermissionKey =
   | typeof PERMISSION_KEYS.File.Read
   | typeof PERMISSION_KEYS.File.Create
   | typeof PERMISSION_KEYS.File.Update
-  | typeof PERMISSION_KEYS.File.Delete;
+  | typeof PERMISSION_KEYS.File.Delete
+  | typeof PERMISSION_KEYS.SystemSetting.Read
+  | typeof PERMISSION_KEYS.SystemSetting.Update
+  | typeof PERMISSION_KEYS.AuditLog.Read;

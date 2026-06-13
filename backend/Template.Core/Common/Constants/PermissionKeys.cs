@@ -41,4 +41,21 @@ public static class PermissionKeys
         /// <summary>Permission to delete files.</summary>
         public const string Delete = "File.Delete";
     }
+
+    /// <summary>System setting permissions.</summary>
+    public static class SystemSetting
+    {
+        /// <summary>Permission to view system settings.</summary>
+        public const string Read = "SystemSetting.Read";
+
+        /// <summary>Permission to update system settings.</summary>
+        public const string Update = "SystemSetting.Update";
+    }
+
+    /// <summary>Audit log permissions.</summary>
+    public static class AuditLog
+    {
+        /// <summary>Permission to view audit logs.</summary>
+        public const string Read = "AuditLog.Read";
+    }
 }

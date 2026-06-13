@@ -15,6 +15,7 @@ type DataTableProps<TData> = {
   columns: Array<ColumnDef<TData, unknown>>;
   data: TData[];
   isLoading?: boolean;
+  onRowClick?: (row: TData) => void;
   searchValue?: string;
   onSearchValueChange?: (value: string) => void;
   pageIndex?: number;
@@ -32,6 +33,7 @@ export function DataTable<TData>({
   columns,
   data,
   isLoading = false,
+  onRowClick,
   searchValue,
   onSearchValueChange,
   pageIndex = 0,
@@ -95,7 +97,11 @@ export function DataTable<TData>({
             </TableRow>
           ) : table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
+              <TableRow
+                key={row.id}
+                className={onRowClick ? "cursor-pointer hover:bg-slate-50" : undefined}
+                onClick={() => onRowClick?.(row.original)}
+              >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

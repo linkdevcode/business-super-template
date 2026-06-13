@@ -132,16 +132,6 @@
 
 ### 3.3. Module File Management (Lưu trữ Tệp tin 0đ)
 
-Các lưu ý kiến trúc quan trọng cho Module File Management
-1. Abstraction over Implementation (IStorageProvider): * Tầng Core chỉ biết đến interface IStorageProvider với các hàm cơ bản: UploadAsync, DeleteAsync, GetUrlAsync.
-Giải thích: Tầng Infrastructure mới là nơi triển khai chi tiết SupabaseStorageProvider. Sau này nếu dự án lớn lên cần chuyển qua AWS S3, Azure Blob Storage hay Google Cloud Storage, bạn chỉ cần viết một Provider mới và đổi đăng ký DI là xong, không ảnh hưởng một dòng code nghiệp vụ nào.
-
-2. Quản lý liên kết File (Foreign Key vs NoSQL style):
-Bảng files độc lập sẽ đóng vai trò quản lý tập trung. Khi một User có Avatar hoặc một Invoice có hóa đơn đính kèm, các bảng đó sẽ lưu trường AvatarFileId hoặc AttachmentFileId trỏ ngược về bảng files. Cách làm này đảm bảo tính toàn vẹn dữ liệu (Data Integrity) tối đa của hệ thống quan hệ.
-
-3. Frontend Progress Tracking (Trải nghiệm người dùng):
-Upload file là một tác vụ mất thời gian. Khi viết API client trong frontend, hãy tận dụng thuộc tính onUploadProgress của Axios để truyền dữ liệu phần trăm (0% -> 100%) ra UI. Nhờ đó, các component upload có thể hiển thị Progress Bar mượt mà, nâng tầm trải nghiệm UX vượt trội so với các template thông thường.
-
 - [x] **Backend**
   - [x] Tạo entity `File` cho bảng `files`.
   - [x] Tạo feature slice `FileManagement`.
@@ -170,29 +160,14 @@ Upload file là một tác vụ mất thời gian. Khi viết API client trong f
     - [x] Cấu hình bắt buộc cơ chế tự động kết nối lại `.withAutomaticReconnect()` để phòng ngừa các sự cố rớt mạng cục bộ hoặc máy chủ khởi động lại, tránh tình trạng chết kết nối ngầm.
   - [x] Kết nối hoàn chỉnh SignalR client với UI "Quả chuông thông báo" và Toast Component để đẩy trải nghiệm thời gian thực lên giao diện một cách mượt mà.
 
-### 3.5. Module Dashboard (Bảng Điều Khiển Tổng Quan)
+### 3.5. Module System Settings & Audit Log Viewer (Quản Trị Hệ Thống)
 
-- [ ] **Backend**
-  - [ ] Triển khai các use case read-only cho KPI / activity feed.
-- [ ] **Frontend**
-  - [ ] Xây dashboard widgets và cards.
-
-### 3.6. Module Reporting (Xuất Bản Báo Cáo)
-
-- [ ] **Backend**
-  - [ ] Tạo `IReportExportProvider`.
-  - [ ] Xuất báo cáo bằng stream hoặc file tạm.
-- [ ] **Frontend**
-  - [ ] Tạo UI tra cứu và export báo cáo.
-
-### 3.7. Module System Settings & Audit Log Viewer
-
-- [ ] **Backend**
-  - [ ] Tạo API đọc/ghi cấu hình `system_settings`.
-  - [ ] Tạo API tra cứu `audit_logs`.
-- [ ] **Frontend**
-  - [ ] Tạo trang System Settings.
-  - [ ] Tạo trang Audit Log Viewer.
+- [x] **Backend**
+  - [x] Hoàn thiện bảng `system_settings` lưu cấu hình hệ thống bằng kiểu dữ liệu **JSONB**. Viết API đọc/ghi và thực hiện validate cấu hình bằng Fluent Validation ở Application layer.
+  - [x] Mở API tra cứu lịch sử từ bảng `audit_logs` (đã được cấu hình cào tự động ở Phase 2.2) hỗ trợ phân trang, lọc và tìm kiếm theo thực thể (Entity Name), ID bản ghi, hoặc người tác động.
+- [x] **Frontend**
+  - [x] Tạo trang Cấu hình hệ thống (System Settings Page) tự động ánh xạ cấu hình dạng JSON nhận từ API thành các trường nhập liệu trực quan (Mail SMTP, cấu hình app...).
+  - [x] Tạo trang Nhật ký hệ thống (Audit Log Viewer) hiển thị danh sách và chi tiết lịch sử thay đổi dạng trước/sau (Before / After Data) trực quan cho Admin.
 
 ---
 

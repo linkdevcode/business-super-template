@@ -7,6 +7,7 @@ type DialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
+  contentClassName?: string;
 };
 
 type DialogSectionProps = {
@@ -14,7 +15,12 @@ type DialogSectionProps = {
 };
 
 /** Summary: Basic dialog wrapper. */
-export function Dialog({ open, onOpenChange, children }: DialogProps): ReactElement | null {
+export function Dialog({
+  open,
+  onOpenChange,
+  children,
+  contentClassName = "",
+}: DialogProps): ReactElement | null {
   if (!open) {
     return null;
   }
@@ -26,7 +32,12 @@ export function Dialog({ open, onOpenChange, children }: DialogProps): ReactElem
       onClick={() => onOpenChange(false)}
     >
       <div
-        className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl"
+        className={[
+          "w-full max-w-lg rounded-lg bg-white p-6 shadow-xl",
+          contentClassName,
+        ]
+          .filter(Boolean)
+          .join(" ")}
         role="dialog"
         aria-modal="true"
         onClick={(event) => event.stopPropagation()}

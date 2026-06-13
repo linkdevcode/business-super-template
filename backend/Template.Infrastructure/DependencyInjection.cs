@@ -2,12 +2,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Template.Core.Common.Interfaces;
+using FluentValidation;
 using Template.Core.Features.FileManagement;
+using Template.Core.Features.SystemSettings;
+using Template.Core.Features.AuditLogs;
 using Template.Core.Features.Notifications;
 using Template.Core.Features.Permissions;
 using Template.Core.Features.Roles;
 using Template.Infrastructure.Auth;
 using Template.Infrastructure.Features.FileManagement.Repositories;
+using Template.Infrastructure.Features.SystemSettings.Repositories;
+using Template.Infrastructure.Features.AuditLogs.Repositories;
 using Template.Infrastructure.Features.Notifications.Repositories;
 using Template.Infrastructure.Notifications;
 using Template.Infrastructure.Storage;
@@ -44,6 +49,8 @@ public static class DependencyInjection
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddScoped<IFileRepository, FileRepository>();
+        services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IStorageProvider, SupabaseStorageProvider>();
         services.AddSingleton<INotificationConnectionTracker, NotificationConnectionTracker>();
@@ -61,6 +68,10 @@ public static class DependencyInjection
         services.AddScoped<UploadFileHandler>();
         services.AddScoped<GetFileHandler>();
         services.AddScoped<DeleteFileHandler>();
+        services.AddScoped<GetSystemSettingsHandler>();
+        services.AddScoped<SaveSystemSettingsHandler>();
+        services.AddScoped<GetAuditLogsHandler>();
+        services.AddScoped<IValidator<SaveSystemSettingsCommand>, SaveSystemSettingsCommandValidator>();
         services.AddAuthenticationServices(configuration);
 
         return services;

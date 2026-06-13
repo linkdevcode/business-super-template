@@ -39,6 +39,16 @@ export function AdminLayout(): ReactElement {
                 Permissions
               </NavLink>
             </HasPermission>
+            <HasPermission permission={PERMISSION_KEYS.SystemSetting.Read}>
+              <NavLink to="/system-settings" className={navLinkClass}>
+                System Settings
+              </NavLink>
+            </HasPermission>
+            <HasPermission permission={PERMISSION_KEYS.AuditLog.Read}>
+              <NavLink to="/audit-logs" className={navLinkClass}>
+                Audit Logs
+              </NavLink>
+            </HasPermission>
           </nav>
         </aside>
 

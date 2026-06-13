@@ -13,6 +13,8 @@ namespace Template.Infrastructure.Persistence;
 /// <summary>Application DbContext for PostgreSQL persistence.</summary>
 public class AppDbContext : DbContext, IUnitOfWork
 {
+    private static readonly JsonSerializerOptions AuditLogJsonOptions = new(JsonSerializerDefaults.Web);
+
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
@@ -223,7 +225,7 @@ public class AppDbContext : DbContext, IUnitOfWork
             EntityType = entry.Metadata.ClrType.Name,
             EntityId = entry.Entity.Id,
             Action = action,
-            Changes = JsonSerializer.Serialize(new { before, after }),
+            Changes = JsonSerializer.Serialize(new { before, after }, AuditLogJsonOptions),
             CreatedAt = utcNow
         };
     }

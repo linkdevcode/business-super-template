@@ -45,6 +45,10 @@ public class AuditLogConfiguration : IEntityTypeConfiguration<AuditLog>
             .IsRequired();
 
         builder.HasIndex(entity => new { entity.EntityType, entity.EntityId });
+        builder.HasIndex(entity => entity.EntityType);
+        builder.HasIndex(entity => entity.CreatedBy);
+        builder.HasIndex(entity => entity.Action);
+        builder.HasIndex(entity => new { entity.CreatedBy, entity.Action, entity.CreatedAt });
         builder.HasIndex(entity => entity.CreatedAt);
     }
 }
