@@ -1,6 +1,7 @@
 import type { ReactElement } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { Button } from "../../shared/components/ui/Button";
+import { HasPermission, useCurrentUser } from "../../features/auth";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }): string =>
   [
@@ -10,6 +11,10 @@ const navLinkClass = ({ isActive }: { isActive: boolean }): string =>
 
 /** Summary: Main authenticated application layout. */
 export function AdminLayout(): ReactElement {
+  const { currentUser } = useCurrentUser();
+
+  const avatarLabel = currentUser?.fullName?.trim().charAt(0).toUpperCase() || "A";
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="grid min-h-screen grid-cols-[240px_1fr]">
@@ -23,9 +28,11 @@ export function AdminLayout(): ReactElement {
             <NavLink to="/" end className={navLinkClass}>
               Dashboard
             </NavLink>
-            <NavLink to="/permissions" className={navLinkClass}>
-              Permissions
-            </NavLink>
+            <HasPermission permission="Permission.View">
+              <NavLink to="/permissions" className={navLinkClass}>
+                Permissions
+              </NavLink>
+            </HasPermission>
           </nav>
         </aside>
 
@@ -40,8 +47,14 @@ export function AdminLayout(): ReactElement {
               <Button variant="secondary" aria-label="Notifications">
                 Bell
               </Button>
+              <Link
+                to="/logout"
+                className="inline-flex h-10 items-center justify-center rounded-md bg-slate-100 px-4 text-sm font-medium text-slate-900 transition-colors hover:bg-slate-200"
+              >
+                Sign out
+              </Link>
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
-                A
+                {avatarLabel}
               </div>
             </div>
           </header>

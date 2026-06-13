@@ -5,7 +5,7 @@ import axios, {
 } from "axios";
 import { appConfig } from "../config/appConfig";
 import { clearAccessToken, getAccessToken, setAccessToken } from "./tokenStore";
-import type { RefreshTokenResponseDto } from "./httpTypes";
+import type { ApiResponse, AuthSessionDto } from "./httpTypes";
 
 type RetryableRequestConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
@@ -72,8 +72,14 @@ async function getRefreshedAccessToken(): Promise<string | null> {
 
 async function refreshAccessToken(): Promise<string | null> {
   try {
-    const response = await refreshClient.post<RefreshTokenResponseDto>("/auth/refresh");
-    const refreshedAccessToken = response.data.accessToken.trim();
+    const response = await refreshClient.post<ApiResponse<AuthSessionDto>>("/auth/refresh");
+    const refreshedSession = response.data.data;
+
+    if (!refreshedSession) {
+      throw new Error("Refresh response did not include a session.");
+    }
+
+    const refreshedAccessToken = refreshedSession.accessToken.trim();
 
     if (!refreshedAccessToken) {
       throw new Error("Refresh response did not include an access token.");
@@ -92,4 +98,4 @@ function redirectToLogin(): void {
   window.location.href = "/login";
 }
 
-export { apiClient };
+export { apiClient, refreshClient };

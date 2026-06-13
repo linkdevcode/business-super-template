@@ -58,7 +58,7 @@ public sealed class GlobalExceptionMiddleware
         return exception switch
         {
             KeyNotFoundException => (StatusCodes.Status404NotFound, "Resource not found.", []),
-            UnauthorizedAccessException => (StatusCodes.Status403Forbidden, "Access denied.", []),
+            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Access denied.", []),
             ArgumentException => (StatusCodes.Status400BadRequest, exception.Message, [exception.Message]),
             InvalidOperationException => (StatusCodes.Status400BadRequest, exception.Message, [exception.Message]),
             _ => (

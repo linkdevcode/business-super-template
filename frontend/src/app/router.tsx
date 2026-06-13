@@ -6,6 +6,7 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { ForbiddenPage } from "./pages/ForbiddenPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { LogoutPage } from "./pages/LogoutPage";
 import { PermissionsPage } from "./pages/PermissionsPage";
 import {
   PermissionProtectedRoute,
@@ -22,6 +23,10 @@ export function AppRouter(): ReactElement {
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
           </Route>
+        </Route>
+
+        <Route element={<AuthLayout />}>
+          <Route path="/logout" element={<LogoutPage />} />
         </Route>
 
         <Route element={<ProtectedRoute />}>
