@@ -52,6 +52,11 @@ public sealed class AuthController : ControllerBase
     public async Task<ActionResult<ApiResponse<AuthSessionDto>>> Refresh(CancellationToken cancellationToken = default)
     {
         var refreshToken = ReadRefreshTokenCookie();
+        if (string.IsNullOrWhiteSpace(refreshToken))
+        {
+            return Unauthorized(ApiResponse<AuthSessionDto>.Failure("Refresh session is missing."));
+        }
+
         var result = await _refreshSessionHandler.HandleAsync(
             new RefreshSessionCommand { RefreshToken = refreshToken },
             cancellationToken);

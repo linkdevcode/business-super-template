@@ -132,24 +132,43 @@
 
 ### 3.3. Module File Management (Lưu trữ Tệp tin 0đ)
 
-- [ ] **Backend**
-  - [ ] Tạo entity `File` cho bảng `files`.
-  - [ ] Tạo feature slice `FileManagement`.
-  - [ ] Triển khai `IStorageProvider` và `SupabaseStorageProvider`.
-  - [ ] Áp dụng soft delete và permission cho file.
-- [ ] **Frontend**
-  - [ ] Tạo feature `file-management`.
-  - [ ] Xây dựng upload/download flow qua Axios.
+Các lưu ý kiến trúc quan trọng cho Module File Management
+1. Abstraction over Implementation (IStorageProvider): * Tầng Core chỉ biết đến interface IStorageProvider với các hàm cơ bản: UploadAsync, DeleteAsync, GetUrlAsync.
+Giải thích: Tầng Infrastructure mới là nơi triển khai chi tiết SupabaseStorageProvider. Sau này nếu dự án lớn lên cần chuyển qua AWS S3, Azure Blob Storage hay Google Cloud Storage, bạn chỉ cần viết một Provider mới và đổi đăng ký DI là xong, không ảnh hưởng một dòng code nghiệp vụ nào.
 
-### 3.4. Module Notification (Real-time Thông báo)
+2. Quản lý liên kết File (Foreign Key vs NoSQL style):
+Bảng files độc lập sẽ đóng vai trò quản lý tập trung. Khi một User có Avatar hoặc một Invoice có hóa đơn đính kèm, các bảng đó sẽ lưu trường AvatarFileId hoặc AttachmentFileId trỏ ngược về bảng files. Cách làm này đảm bảo tính toàn vẹn dữ liệu (Data Integrity) tối đa của hệ thống quan hệ.
+
+3. Frontend Progress Tracking (Trải nghiệm người dùng):
+Upload file là một tác vụ mất thời gian. Khi viết API client trong frontend, hãy tận dụng thuộc tính onUploadProgress của Axios để truyền dữ liệu phần trăm (0% -> 100%) ra UI. Nhờ đó, các component upload có thể hiển thị Progress Bar mượt mà, nâng tầm trải nghiệm UX vượt trội so với các template thông thường.
+
+- [x] **Backend**
+  - [x] Tạo entity `File` cho bảng `files`.
+  - [x] Tạo feature slice `FileManagement`.
+  - [x] Triển khai `IStorageProvider` và `SupabaseStorageProvider`.
+  - [x] Áp dụng soft delete và permission cho file.
+- [x] **Frontend**
+  - [x] Tạo feature `file-management`.
+  - [x] Xây dựng upload/download flow qua Axios.
+
+### 3.5. Module Notification (Real-time Thông báo)
 
 - [ ] **Backend**
-  - [ ] Tạo entity `Notification` cho bảng `notifications`.
-  - [ ] Tạo `NotificationHub`.
-  - [ ] Triển khai `CreateNotification`, `MarkAsRead`, `MarkAllAsRead`, `GetMyNotifications`.
+  - [ ] Tạo thực thể `Notification` cho bảng `notifications`.
+  - [ ] Triển khai lớp `NotificationHub` kế thừa từ `Hub` của SignalR:
+    - [ ] Override hai hàm `OnConnectedAsync` và `OnDisconnectedAsync` để tự động ánh xạ (map) giữa `Context.User.GetUserId()` (bóc tách từ JWT Token) với `ConnectionId` tương ứng của trình duyệt.
+    - [ ] Đảm bảo cơ chế gửi thông báo nhắm chính xác đích danh user qua: `_hubContext.Clients.User(userId.ToString()).SendAsync(...)`.
+  - [ ] Triển khai luồng xử lý đồng bộ giữa Database và Real-time khi có sự kiện thông báo (`CreateNotification`):
+    - [ ] **Bước 1:** Ghi một bản ghi mới chứa đầy đủ Metadata vào bảng `notifications` trong cơ sở dữ liệu để lưu vết lịch sử tra cứu sau này.
+    - [ ] **Bước 2:** Gọi qua `IHubContext` để kích hoạt một sự kiện WebSockets hạ tầng xuống chính xác Client của User liên quan (nếu họ đang trực tuyến) để hiển thị giao diện lập tức.
+  - [ ] Xây dựng hoàn chỉnh các Use Cases: `CreateNotification`, `MarkAsRead`, `MarkAllAsRead`, `GetMyNotifications`.
+
 - [ ] **Frontend**
-  - [ ] Tạo feature `notification`.
-  - [ ] Kết nối SignalR client.
+  - [ ] Tạo cấu trúc thư mục tính năng `frontend/src/features/notification/`.
+  - [ ] Quản lý kết nối bền bỉ (Resilient Connection) với SignalR Server:
+    - [ ] Khởi tạo SignalR Client ở cấp độ **App Provider** hoặc **Global Context** (chỉ cho phép thiết lập cổng kết nối ngầm sau khi người dùng xác thực thành công).
+    - [ ] Cấu hình bắt buộc cơ chế tự động kết nối lại `.withAutomaticReconnect()` để phòng ngừa các sự cố rớt mạng cục bộ hoặc máy chủ khởi động lại, tránh tình trạng chết kết nối ngầm.
+  - [ ] Kết nối hoàn chỉnh SignalR client với UI "Quả chuông thông báo" và Toast Component để đẩy trải nghiệm thời gian thực lên giao diện một cách mượt mà.
 
 ### 3.5. Module Dashboard (Bảng Điều Khiển Tổng Quan)
 

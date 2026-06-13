@@ -25,4 +25,20 @@ public static class PermissionKeys
         /// <summary>Permission to view the permission catalog.</summary>
         public const string Read = "Permission.Read";
     }
+
+    /// <summary>File-related permissions.</summary>
+    public static class File
+    {
+        /// <summary>Permission to view file metadata.</summary>
+        public const string Read = "File.Read";
+
+        /// <summary>Permission to upload files.</summary>
+        public const string Create = "File.Create";
+
+        /// <summary>Permission to update file metadata.</summary>
+        public const string Update = "File.Update";
+
+        /// <summary>Permission to delete files.</summary>
+        public const string Delete = "File.Delete";
+    }
 }

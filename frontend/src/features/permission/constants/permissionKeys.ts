@@ -8,6 +8,12 @@ export const PERMISSION_KEYS = {
   Permission: {
     Read: "Permission.Read",
   },
+  File: {
+    Read: "File.Read",
+    Create: "File.Create",
+    Update: "File.Update",
+    Delete: "File.Delete",
+  },
 } as const;
 
 export type PermissionKey =
@@ -15,4 +21,8 @@ export type PermissionKey =
   | typeof PERMISSION_KEYS.Role.Create
   | typeof PERMISSION_KEYS.Role.Update
   | typeof PERMISSION_KEYS.Role.Delete
-  | typeof PERMISSION_KEYS.Permission.Read;
+  | typeof PERMISSION_KEYS.Permission.Read
+  | typeof PERMISSION_KEYS.File.Read
+  | typeof PERMISSION_KEYS.File.Create
+  | typeof PERMISSION_KEYS.File.Update
+  | typeof PERMISSION_KEYS.File.Delete;

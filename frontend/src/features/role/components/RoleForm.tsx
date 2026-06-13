@@ -1,6 +1,7 @@
 import { useMemo, type ReactElement } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { z } from "zod";
 import { Button } from "../../../shared/components/ui/Button";
 import { Input } from "../../../shared/components/ui/Input";
 import type { PermissionGroupDto } from "../../permission";
@@ -37,7 +38,7 @@ export function RoleForm({
     control,
     setValue,
     formState: { errors },
-  } = useForm<RoleFormValues>({
+  } = useForm<z.input<typeof roleSchema>, unknown, RoleFormValues>({
     resolver: zodResolver(roleSchema),
     defaultValues: normalizedDefaults,
   });

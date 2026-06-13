@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Template.Core.Common.Interfaces;
 using Template.Core.Common.Models;
+using FileEntity = Template.Core.Entities.File;
 using Template.Core.Entities;
 using System.Text.Json;
 
@@ -36,6 +37,9 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     /// <summary>Gets the system setting set.</summary>
     public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+
+    /// <summary>Gets the file metadata set.</summary>
+    public DbSet<FileEntity> Files => Set<FileEntity>();
 
     /// <inheritdoc />
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
