@@ -7,7 +7,9 @@ import { ForbiddenPage } from "./pages/ForbiddenPage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { LogoutPage } from "./pages/LogoutPage";
-import { PermissionsPage } from "./pages/PermissionsPage";
+import { PermissionsPage } from "../features/permission";
+import { RolesPage } from "../features/role";
+import { PERMISSION_KEYS } from "../features/permission";
 import {
   PermissionProtectedRoute,
   ProtectedRoute,
@@ -32,8 +34,11 @@ export function AppRouter(): ReactElement {
         <Route element={<ProtectedRoute />}>
           <Route element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
-            <Route element={<PermissionProtectedRoute permission="Permission.View" />}>
+            <Route element={<PermissionProtectedRoute permission={PERMISSION_KEYS.Permission.Read} />}>
               <Route path="/permissions" element={<PermissionsPage />} />
+            </Route>
+            <Route element={<PermissionProtectedRoute permission={PERMISSION_KEYS.Role.Read} />}>
+              <Route path="/roles" element={<RolesPage />} />
             </Route>
           </Route>
         </Route>

@@ -5,6 +5,14 @@ export interface ApiResponse<T> {
   errors: string[];
 }
 
+export interface PagedResponse<T> {
+  items: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+}
+
 export interface AuthUserDto {
   id: string;
   email: string;

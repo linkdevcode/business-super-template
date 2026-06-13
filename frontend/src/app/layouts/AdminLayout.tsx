@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { Button } from "../../shared/components/ui/Button";
 import { HasPermission, useCurrentUser } from "../../features/auth";
+import { PERMISSION_KEYS } from "../../features/permission";
 
 const navLinkClass = ({ isActive }: { isActive: boolean }): string =>
   [
@@ -28,7 +29,12 @@ export function AdminLayout(): ReactElement {
             <NavLink to="/" end className={navLinkClass}>
               Dashboard
             </NavLink>
-            <HasPermission permission="Permission.View">
+            <HasPermission permission={PERMISSION_KEYS.Role.Read}>
+              <NavLink to="/roles" className={navLinkClass}>
+                Roles
+              </NavLink>
+            </HasPermission>
+            <HasPermission permission={PERMISSION_KEYS.Permission.Read}>
               <NavLink to="/permissions" className={navLinkClass}>
                 Permissions
               </NavLink>

@@ -1,30 +1,9 @@
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { ReactElement } from "react";
 import { login as loginRequest, logout as logoutRequest, refreshSession as refreshSessionRequest } from "../api/authApi";
 import type { AuthSessionDto, AuthUserDto, LoginInput } from "../types/auth";
 import { clearAccessToken, setAccessToken, subscribeToAccessTokenChanges } from "../../../shared/http/tokenStore";
-
-type AuthContextValue = {
-  currentUser: AuthUserDto | null;
-  session: AuthSessionDto | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  login: (input: LoginInput) => Promise<AuthSessionDto>;
-  logout: () => Promise<void>;
-  refreshSession: () => Promise<AuthSessionDto>;
-  clearSession: () => void;
-  hasPermission: (permission: string) => boolean;
-  hasRole: (role: string) => boolean;
-};
-
-export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+import { AuthContext, type AuthContextState } from "../context/authContext";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -138,7 +117,7 @@ export function AuthProvider({ children }: AuthProviderProps): ReactElement {
     return unsubscribe;
   }, []);
 
-  const value = useMemo<AuthContextValue>(
+  const value = useMemo<AuthContextState>(
     () => ({
       currentUser,
       session,

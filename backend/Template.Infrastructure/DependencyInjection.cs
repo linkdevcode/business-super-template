@@ -2,9 +2,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Template.Core.Common.Interfaces;
+using Template.Core.Features.Permissions;
+using Template.Core.Features.Roles;
 using Template.Infrastructure.Auth;
 using Template.Infrastructure.Persistence;
 using Template.Infrastructure.Persistence.Repositories;
+using Template.Infrastructure.Features.Permissions.Repositories;
+using Template.Infrastructure.Features.Roles.Repositories;
 
 namespace Template.Infrastructure;
 
@@ -25,6 +29,8 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<AppDbContext>());
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IPermissionRepository, PermissionRepository>();
         services.AddAuthenticationServices(configuration);
 
         return services;

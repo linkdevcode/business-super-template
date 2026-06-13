@@ -1,19 +1,7 @@
 import { useContext } from "react";
-import { AuthContext } from "../components/AuthProvider";
-import type { AuthSessionDto, AuthUserDto, LoginInput } from "../types/auth";
-
-export type AuthContextState = {
-  currentUser: AuthUserDto | null;
-  session: AuthSessionDto | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  login: (input: LoginInput) => Promise<AuthSessionDto>;
-  logout: () => Promise<void>;
-  refreshSession: () => Promise<AuthSessionDto>;
-  clearSession: () => void;
-  hasPermission: (permission: string) => boolean;
-  hasRole: (role: string) => boolean;
-};
+import { AuthContext } from "../context/authContext";
+import type { AuthUserDto } from "../types/auth";
+import type { AuthContextState } from "../context/authContext";
 
 export function useAuth(): AuthContextState {
   const context = useContext(AuthContext);

@@ -1,6 +1,7 @@
 import type { ReactNode, ReactElement } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { usePermission, useAuth } from "../hooks/useAuth";
+import { HasPermission as PermissionGuard } from "../../permission";
 
 type GuardProps = {
   children?: ReactNode;
@@ -75,11 +76,9 @@ export function PermissionProtectedRoute({ children, permission }: PermissionGua
 
 /** Summary: Renders content only when the current user has a permission. */
 export function HasPermission({ children, permission, fallback = null }: PermissionProps): ReactElement | null {
-  const { hasPermission } = usePermission();
-
-  if (!hasPermission(permission)) {
-    return <>{fallback}</>;
-  }
-
-  return <>{children}</>;
+  return (
+    <PermissionGuard permission={permission} fallback={fallback}>
+      {children}
+    </PermissionGuard>
+  );
 }

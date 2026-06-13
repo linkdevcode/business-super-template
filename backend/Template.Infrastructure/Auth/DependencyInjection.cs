@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +27,8 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddSingleton<IIdentityService, IdentityService>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+        services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddScoped<LoginHandler>();
         services.AddScoped<RefreshSessionHandler>();
         services.AddScoped<LogoutHandler>();

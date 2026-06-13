@@ -118,35 +118,19 @@
   - [x] Viết route guard cho `ProtectedRoute`, `PublicRoute`.
   - [x] Dùng `axiosClient` để gắn access token và refresh tự động.
 
-### 3.2. Module Role & Permission (RBAC)
+### 3.2. Module Role & Permission (RBAC & CRUD Pattern Standard)
+- [x] **Backend**
+  - [x] Tạo feature slices riêng cho `Role` và `Permission` trong `Template.Core`, `Template.Infrastructure`, `Template.API`.
+  - [x] Định nghĩa bộ Permission Key thống nhất theo chuẩn PascalCase dot format (`Resource.Action`).
+  - [x] Viết `PermissionRequirement` và `HasPermissionAttribute` để kiểm tra quyền hạn (Authorization) ở tầng Server.
+  - [x] Triển khai **pattern CRUD mẫu** cho `Role` kế thừa từ `BaseRepository`: API list ép phân trang/lọc/sort server-side (`IQueryable` + `.AsNoTracking()`), áp dụng soft delete và chặn quyền bằng `[HasPermission("Role.Read")]`.
+- [x] **Frontend**
+  - [x] Tạo UI quản lý danh sách `Roles` và tích chọn `Permissions` chi tiết (Many-to-Many Form) theo cấu trúc feature slice chuẩn.
+  - [x] Trang danh sách Role kết nối trực tiếp với siêu component `<DataTable />` làm mẫu hiển thị, phân trang từ Backend.
+  - [x] Màn hình Form Thêm/Sửa Role bọc `react-hook-form` + `zod` làm bài mẫu xử lý dữ liệu.
+  - [x] Triển khai component `<HasPermission name="Resource.Action" />` để điều khiển UI động từ Client side.
 
-- [ ] **Backend**
-  - [ ] Tạo feature slices cho `Role` và `Permission`.
-  - [ ] Map `roles`, `permissions`, `user_roles`, `role_permissions`.
-  - [ ] Định nghĩa permission key theo `Resource.Action`.
-  - [ ] Viết `PermissionRequirement` và `HasPermissionAttribute`.
-  - [ ] Gắn authorization entry point ở controller/action.
-- [ ] **Frontend**
-  - [ ] Tạo UI quản lý `Roles` và `Permissions`.
-  - [ ] Tạo `<HasPermission name="Resource.Action" />`.
-  - [ ] Chuẩn bị UI gán role cho user.
-
-### 3.3. Module Master Data CRUD Standard
-
-- [ ] **Backend**
-  - [ ] Tạo entity và module slices cho `Customer`.
-  - [ ] Tạo entity và module slices cho `Supplier`.
-  - [ ] Tạo entity và module slices cho `Employee`.
-  - [ ] Tạo entity và module slices cho `Product`.
-  - [ ] Chuẩn hóa CRUD pattern cho master data.
-  - [ ] Bảo đảm query list dùng `.AsNoTracking()` và `IQueryable`.
-  - [ ] Áp dụng soft delete và permission guard.
-- [ ] **Frontend**
-  - [ ] Sử dụng `frontend/src/features/{feature-name}/` cho master data.
-  - [ ] Trang danh sách dùng `<DataTable />`.
-  - [ ] Form dùng `react-hook-form` + `zod`.
-
-### 3.4. Module File Management (Lưu trữ Tệp tin 0đ)
+### 3.3. Module File Management (Lưu trữ Tệp tin 0đ)
 
 - [ ] **Backend**
   - [ ] Tạo entity `File` cho bảng `files`.
@@ -157,7 +141,7 @@
   - [ ] Tạo feature `file-management`.
   - [ ] Xây dựng upload/download flow qua Axios.
 
-### 3.5. Module Notification (Real-time Thông báo)
+### 3.4. Module Notification (Real-time Thông báo)
 
 - [ ] **Backend**
   - [ ] Tạo entity `Notification` cho bảng `notifications`.
@@ -167,14 +151,14 @@
   - [ ] Tạo feature `notification`.
   - [ ] Kết nối SignalR client.
 
-### 3.6. Module Dashboard (Bảng Điều Khiển Tổng Quan)
+### 3.5. Module Dashboard (Bảng Điều Khiển Tổng Quan)
 
 - [ ] **Backend**
   - [ ] Triển khai các use case read-only cho KPI / activity feed.
 - [ ] **Frontend**
   - [ ] Xây dashboard widgets và cards.
 
-### 3.7. Module Reporting (Xuất Bản Báo Cáo)
+### 3.6. Module Reporting (Xuất Bản Báo Cáo)
 
 - [ ] **Backend**
   - [ ] Tạo `IReportExportProvider`.
@@ -182,7 +166,7 @@
 - [ ] **Frontend**
   - [ ] Tạo UI tra cứu và export báo cáo.
 
-### 3.8. Module System Settings & Audit Log Viewer
+### 3.7. Module System Settings & Audit Log Viewer
 
 - [ ] **Backend**
   - [ ] Tạo API đọc/ghi cấu hình `system_settings`.
