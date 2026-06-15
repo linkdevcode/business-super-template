@@ -1,5 +1,6 @@
-import { useState, type ReactElement } from "react";
+import { useMemo, useState, type ReactElement } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
 import { Button } from "../../../shared/components/ui/Button";
 import {
   Dialog,
@@ -25,6 +26,7 @@ import type { RoleListItemDto } from "../types/role";
 type DialogMode = "create" | "edit" | null;
 
 export function RolesPage(): ReactElement {
+  const { t } = useTranslation();
   const [searchValue, setSearchValue] = useState("");
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -94,51 +96,54 @@ export function RolesPage(): ReactElement {
     closeDeleteDialog();
   };
 
-  const columns: Array<ColumnDef<RoleListItemDto, unknown>> = [
-    {
-      accessorKey: "name",
-      header: "Name",
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-      cell: ({ row }) => row.original.description ?? "-",
-    },
-    {
-      accessorKey: "permissionCount",
-      header: "Permissions",
-      cell: ({ row }) => (
-        <div className="space-y-1">
-          <div className="text-sm font-medium text-foreground">
-            {row.original.permissionCount} permission(s)
+  const columns: Array<ColumnDef<RoleListItemDto, unknown>> = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: t("common.name"),
+      },
+      {
+        accessorKey: "description",
+        header: t("common.description"),
+        cell: ({ row }) => row.original.description ?? "-",
+      },
+      {
+        accessorKey: "permissionCount",
+        header: t("roles.permissionsColumn"),
+        cell: ({ row }) => (
+          <div className="space-y-1">
+            <div className="text-sm font-medium text-foreground">
+              {t("common.permissionCount", { count: row.original.permissionCount })}
+            </div>
+            {row.original.permissionKeys.length > 0 ? (
+              <div className="text-xs text-muted-foreground">{row.original.permissionKeys.join(", ")}</div>
+            ) : (
+              <div className="text-xs text-muted-foreground">{t("common.noPermissions")}</div>
+            )}
           </div>
-          {row.original.permissionKeys.length > 0 ? (
-            <div className="text-xs text-muted-foreground">{row.original.permissionKeys.join(", ")}</div>
-          ) : (
-            <div className="text-xs text-muted-foreground">No permissions</div>
-          )}
-        </div>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <HasPermission permission={PERMISSION_KEYS.Role.Update}>
-            <Button variant="secondary" onClick={() => openEditDialog(row.original.id)}>
-              Edit
-            </Button>
-          </HasPermission>
-          <HasPermission permission={PERMISSION_KEYS.Role.Delete}>
-            <Button variant="danger" onClick={() => setDeletingRole(row.original)}>
-              Delete
-            </Button>
-          </HasPermission>
-        </div>
-      ),
-    },
-  ];
+        ),
+      },
+      {
+        id: "actions",
+        header: t("common.actions"),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <HasPermission permission={PERMISSION_KEYS.Role.Update}>
+              <Button variant="secondary" onClick={() => openEditDialog(row.original.id)}>
+                {t("common.edit")}
+              </Button>
+            </HasPermission>
+            <HasPermission permission={PERMISSION_KEYS.Role.Delete}>
+              <Button variant="danger" onClick={() => setDeletingRole(row.original)}>
+                {t("common.delete")}
+              </Button>
+            </HasPermission>
+          </div>
+        ),
+      },
+    ],
+    [t],
+  );
 
   const defaultValues = selectedRoleQuery.data
     ? {
@@ -152,12 +157,12 @@ export function RolesPage(): ReactElement {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">Roles</h1>
-          <p className="text-sm text-muted-foreground">Manage RBAC roles and assign permissions.</p>
+          <h1 className="text-2xl font-semibold">{t("roles.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("roles.description")}</p>
         </div>
 
         <HasPermission permission={PERMISSION_KEYS.Role.Create}>
-          <Button onClick={openCreateDialog}>Add Role</Button>
+          <Button onClick={openCreateDialog}>{t("roles.addRole")}</Button>
         </HasPermission>
       </div>
 
@@ -178,8 +183,8 @@ export function RolesPage(): ReactElement {
           setPageSize(nextPageSize);
           setPageIndex(0);
         }}
-        emptyTitle="No roles found"
-        emptyDescription="Try changing the search term or create a new role."
+        emptyTitle={t("roles.emptyTitle")}
+        emptyDescription={t("roles.emptyDescription")}
       />
 
       <Dialog open={dialogMode !== null} onOpenChange={(open) => (!open ? closeDialog() : undefined)}>
@@ -187,17 +192,15 @@ export function RolesPage(): ReactElement {
           selectedRoleQuery.isLoading && dialogMode === "edit" ? (
             <div className="space-y-2">
               <DialogHeader>
-                <DialogTitle>Loading role...</DialogTitle>
-                <DialogDescription>Please wait while we load role data.</DialogDescription>
+                <DialogTitle>{t("roles.loadingRole")}</DialogTitle>
+                <DialogDescription>{t("roles.loadingRoleDescription")}</DialogDescription>
               </DialogHeader>
             </div>
           ) : (
             <div className="space-y-2">
               <DialogHeader>
-                <DialogTitle>{dialogMode === "create" ? "Create Role" : "Edit Role"}</DialogTitle>
-                <DialogDescription>
-                  Configure the role information and assign permissions.
-                </DialogDescription>
+                <DialogTitle>{dialogMode === "create" ? t("roles.createRole") : t("roles.editRole")}</DialogTitle>
+                <DialogDescription>{t("roles.dialogDescription")}</DialogDescription>
               </DialogHeader>
 
               <RoleForm
@@ -205,7 +208,7 @@ export function RolesPage(): ReactElement {
                 defaultValues={defaultValues}
                 permissionGroups={permissionGroups}
                 isSubmitting={createRoleMutation.isPending || updateRoleMutation.isPending}
-                submitLabel={dialogMode === "create" ? "Create Role" : "Save Changes"}
+                submitLabel={dialogMode === "create" ? t("roles.createRole") : t("roles.saveChanges")}
                 onSubmit={handleSubmit}
               />
             </div>
@@ -217,14 +220,14 @@ export function RolesPage(): ReactElement {
         {deletingRole ? (
           <div>
             <DialogHeader>
-              <DialogTitle>Delete role</DialogTitle>
+              <DialogTitle>{t("roles.deleteRole")}</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete <strong>{deletingRole.name}</strong>?
+                {t("roles.deleteConfirm", { name: deletingRole.name })}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <DialogCancel onClick={closeDeleteDialog}>Cancel</DialogCancel>
-              <DialogConfirm onClick={handleDelete}>Delete</DialogConfirm>
+              <DialogCancel onClick={closeDeleteDialog}>{t("common.cancel")}</DialogCancel>
+              <DialogConfirm onClick={handleDelete}>{t("common.delete")}</DialogConfirm>
             </DialogFooter>
           </div>
         ) : null}

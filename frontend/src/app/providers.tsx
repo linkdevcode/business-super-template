@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { AuthProvider } from "../features/auth";
 import { NotificationHubBridge } from "../features/notification";
+import { TooltipProvider } from "../shared/components/ui/Tooltip";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes";
 
@@ -36,10 +37,12 @@ export function AppProviders({ children }: AppProvidersProps): ReactElement {
       storageKey="my-super-template-theme"
     >
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <NotificationHubBridge />
-          {children}
-        </AuthProvider>
+        <TooltipProvider>
+          <AuthProvider>
+            <NotificationHubBridge />
+            {children}
+          </AuthProvider>
+        </TooltipProvider>
         <Toaster richColors position="top-right" closeButton theme="system" />
       </QueryClientProvider>
     </ThemeProvider>

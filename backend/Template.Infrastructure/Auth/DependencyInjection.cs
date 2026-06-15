@@ -29,6 +29,7 @@ public static class DependencyInjection
             .ValidateOnStart();
 
         services.AddSingleton<IIdentityService, IdentityService>();
+        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
         services.AddScoped<LoginHandler>();
@@ -81,9 +82,6 @@ public static class DependencyInjection
         return !string.IsNullOrWhiteSpace(options.Issuer)
             && !string.IsNullOrWhiteSpace(options.Audience)
             && !string.IsNullOrWhiteSpace(options.Secret)
-            && options.Secret.Length >= 32
-            && !string.IsNullOrWhiteSpace(options.DemoAccount.Email)
-            && !string.IsNullOrWhiteSpace(options.DemoAccount.Password)
-            && !string.IsNullOrWhiteSpace(options.DemoAccount.FullName);
+            && options.Secret.Length >= 32;
     }
 }

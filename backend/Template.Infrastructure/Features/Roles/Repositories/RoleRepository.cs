@@ -84,6 +84,23 @@ public sealed class RoleRepository : BaseRepository<Role>, IRoleRepository
         return query.AnyAsync(cancellationToken);
     }
 
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Role>> GetByIdsAsync(
+        IReadOnlyCollection<Guid> ids,
+        CancellationToken cancellationToken = default)
+    {
+        var normalizedIds = ids.Where(id => id != Guid.Empty).Distinct().ToArray();
+        if (normalizedIds.Length == 0)
+        {
+            return [];
+        }
+
+        return await _dbContext.Roles
+            .AsNoTracking()
+            .Where(role => normalizedIds.Contains(role.Id))
+            .ToListAsync(cancellationToken);
+    }
+
     private static IQueryable<Role> ApplySearch(IQueryable<Role> query, string? searchTerm)
     {
         if (string.IsNullOrWhiteSpace(searchTerm))

@@ -258,7 +258,7 @@ public class AppDbContext : DbContext, IUnitOfWork
 
     private static bool ShouldSkipProperty(string propertyName, bool includeDeletedAt)
     {
-        if (propertyName is nameof(BaseEntity.CreatedAt) or nameof(BaseEntity.UpdatedAt))
+        if (propertyName is nameof(BaseEntity.CreatedAt) or nameof(BaseEntity.UpdatedAt) or nameof(User.PasswordHash))
         {
             return true;
         }

@@ -3,13 +3,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Template.Core.Features.Auth;
 using Template.Core.Entities;
-using Template.Infrastructure.Persistence;
+using Template.Core.Features.Users;
 
 namespace Template.Infrastructure.Auth;
 
@@ -34,7 +33,7 @@ public sealed class IdentityService : IIdentityService
     }
 
     /// <inheritdoc />
-    public Task<AuthLoginResult> RefreshSessionAsync(
+    public async Task<AuthLoginResult> RefreshSessionAsync(
         RefreshSessionCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -60,7 +59,7 @@ public sealed class IdentityService : IIdentityService
         session.RevokedAt = DateTimeOffset.UtcNow;
         _refreshTokens[currentTokenHash] = session;
 
-        return Task.FromResult(RotateSession(session));
+        return await ReloadAndRotateSessionAsync(session, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -98,28 +97,30 @@ public sealed class IdentityService : IIdentityService
     {
         EnsureCancellationNotRequested(cancellationToken);
 
-        if (!IsValidDemoAccount(command))
-        {
-            throw new UnauthorizedAccessException("Invalid email or password.");
-        }
-
-        var businessUser = await LoadBusinessUserByEmailAsync(command.Email, cancellationToken);
-        if (businessUser is null || !IsActiveUser(businessUser))
-        {
-            throw new UnauthorizedAccessException("Invalid email or password.");
-        }
-
+        var businessUser = await AuthenticateAsync(command.Email, command.Password, cancellationToken);
         var sessionUser = await CreateSessionUserAsync(businessUser, cancellationToken);
         return CreateLoginResult(sessionUser);
     }
 
-    private bool IsValidDemoAccount(LoginCommand command)
+    private async Task<User> AuthenticateAsync(
+        string email,
+        string password,
+        CancellationToken cancellationToken)
     {
-        var email = command.Email?.Trim() ?? string.Empty;
-        var password = command.Password ?? string.Empty;
+        using var scope = _serviceScopeFactory.CreateScope();
+        var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+        var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
 
-        return string.Equals(email, _options.DemoAccount.Email.Trim(), StringComparison.OrdinalIgnoreCase)
-            && string.Equals(password, _options.DemoAccount.Password, StringComparison.Ordinal);
+        var normalizedEmail = email.Trim();
+        var businessUser = await userRepository.GetActiveByEmailAsync(normalizedEmail, cancellationToken);
+        if (businessUser is null
+            || string.IsNullOrWhiteSpace(businessUser.PasswordHash)
+            || !passwordHasher.VerifyPassword(password, businessUser.PasswordHash))
+        {
+            throw new UnauthorizedAccessException("Invalid email or password.");
+        }
+
+        return businessUser;
     }
 
     private async Task<AuthUserDto?> GetCurrentUserInternalAsync(
@@ -141,8 +142,10 @@ public sealed class IdentityService : IIdentityService
             return null;
         }
 
-        var businessUser = await LoadBusinessUserByIdAsync(userId, cancellationToken);
-        if (businessUser is null || !IsActiveUser(businessUser))
+        using var scope = _serviceScopeFactory.CreateScope();
+        var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+        var businessUser = await userRepository.GetActiveByIdAsync(userId, cancellationToken);
+        if (businessUser is null)
         {
             return null;
         }
@@ -179,7 +182,23 @@ public sealed class IdentityService : IIdentityService
         };
     }
 
-    private AuthLoginResult RotateSession(RefreshTokenRecord session)
+    private async Task<AuthLoginResult> ReloadAndRotateSessionAsync(
+        RefreshTokenRecord session,
+        CancellationToken cancellationToken)
+    {
+        using var scope = _serviceScopeFactory.CreateScope();
+        var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+        var businessUser = await userRepository.GetActiveByIdAsync(session.UserId, cancellationToken);
+        if (businessUser is null)
+        {
+            throw new UnauthorizedAccessException("Refresh session is invalid.");
+        }
+
+        var freshUser = await CreateSessionUserAsync(businessUser, cancellationToken);
+        return RotateSession(session, freshUser);
+    }
+
+    private AuthLoginResult RotateSession(RefreshTokenRecord session, AuthUserDto user)
     {
         var accessTokenExpiresAt = DateTimeOffset.UtcNow.AddMinutes(_options.AccessTokenLifetimeMinutes);
         var refreshToken = GenerateRefreshToken();
@@ -189,7 +208,7 @@ public sealed class IdentityService : IIdentityService
         {
             TokenHash = refreshTokenHash,
             UserId = session.UserId,
-            User = session.User,
+            User = user,
             ExpiresAt = DateTimeOffset.UtcNow.AddDays(_options.RefreshTokenLifetimeDays)
         };
 
@@ -240,67 +259,21 @@ public sealed class IdentityService : IIdentityService
 
     private async Task<AuthUserDto> CreateSessionUserAsync(User user, CancellationToken cancellationToken)
     {
-        var roles = await LoadRoleNamesAsync(user.Id, cancellationToken);
-        var permissions = await LoadPermissionKeysAsync(user.Id, cancellationToken);
+        using var scope = _serviceScopeFactory.CreateScope();
+        var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+        var roles = await userRepository.GetRoleNamesAsync(user.Id, cancellationToken);
+        var permissions = await userRepository.GetPermissionKeysAsync(user.Id, cancellationToken);
 
         return new AuthUserDto
         {
             Id = user.Id,
             Email = user.Email,
             FullName = user.FullName,
+            AvatarUrl = user.AvatarUrl,
             Status = user.Status,
             Roles = roles,
             Permissions = permissions
         };
-    }
-
-    private async Task<User?> LoadBusinessUserByEmailAsync(string email, CancellationToken cancellationToken)
-    {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var normalizedEmail = email.Trim();
-
-        return await dbContext.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(user => user.Email == normalizedEmail, cancellationToken);
-    }
-
-    private async Task<User?> LoadBusinessUserByIdAsync(Guid userId, CancellationToken cancellationToken)
-    {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        return await dbContext.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(user => user.Id == userId, cancellationToken);
-    }
-
-    private async Task<IReadOnlyList<string>> LoadRoleNamesAsync(Guid userId, CancellationToken cancellationToken)
-    {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        return await dbContext.UserRoles
-            .AsNoTracking()
-            .Where(userRole => userRole.UserId == userId)
-            .Select(userRole => userRole.Role.Name)
-            .Distinct()
-            .ToArrayAsync(cancellationToken);
-    }
-
-    private async Task<IReadOnlyList<string>> LoadPermissionKeysAsync(Guid userId, CancellationToken cancellationToken)
-    {
-        using var scope = _serviceScopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        return await (
-                from userRole in dbContext.UserRoles.AsNoTracking()
-                join rolePermission in dbContext.RolePermissions.AsNoTracking()
-                    on userRole.RoleId equals rolePermission.RoleId
-                where userRole.UserId == userId
-                select rolePermission.Permission.Key)
-            .Distinct()
-            .ToArrayAsync(cancellationToken);
     }
 
     private static string GenerateRefreshToken()
@@ -321,10 +294,5 @@ public sealed class IdentityService : IIdentityService
         {
             cancellationToken.ThrowIfCancellationRequested();
         }
-    }
-
-    private static bool IsActiveUser(User user)
-    {
-        return string.Equals(user.Status, "ACTIVE", StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { ReactElement } from "react";
-import { login as loginRequest, logout as logoutRequest, refreshSession as refreshSessionRequest } from "../api/authApi";
+import { login as loginRequest, logout as logoutRequest, refreshSession as refreshSessionRequest, getCurrentUser as getCurrentUserRequest } from "../api/authApi";
 import type { AuthSessionDto, AuthUserDto, LoginInput } from "../types/auth";
 import { clearAccessToken, setAccessToken, subscribeToAccessTokenChanges } from "../../../shared/http/tokenStore";
 import { AuthContext, type AuthContextState } from "../context/authContext";
@@ -48,6 +48,20 @@ export function AuthProvider({ children }: AuthProviderProps): ReactElement {
     syncSession(nextSession);
     return nextSession;
   }, [syncSession]);
+
+  const refreshCurrentUser = useCallback(async (): Promise<AuthUserDto> => {
+    const nextUser = await getCurrentUserRequest();
+    setCurrentUser(nextUser);
+    setSession((currentSession) =>
+      currentSession
+        ? {
+            ...currentSession,
+            user: nextUser,
+          }
+        : currentSession,
+    );
+    return nextUser;
+  }, []);
 
   const logout = useCallback(async (): Promise<void> => {
     try {
@@ -126,11 +140,12 @@ export function AuthProvider({ children }: AuthProviderProps): ReactElement {
       login,
       logout,
       refreshSession,
+      refreshCurrentUser,
       clearSession,
       hasPermission,
       hasRole,
     }),
-    [clearSession, currentUser, hasPermission, hasRole, isLoading, login, logout, refreshSession, session],
+    [clearSession, currentUser, hasPermission, hasRole, isLoading, login, logout, refreshCurrentUser, refreshSession, session],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

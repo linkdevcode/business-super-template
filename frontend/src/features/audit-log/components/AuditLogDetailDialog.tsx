@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogDescription,
@@ -21,27 +22,26 @@ export function AuditLogDetailDialog({
   open,
   onOpenChange,
 }: AuditLogDetailDialogProps): ReactElement {
+  const { t } = useTranslation();
   const payload = log ? parseChanges(log.changes) : { before: null, after: null };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} contentClassName="!max-w-5xl">
       <DialogHeader>
-        <DialogTitle>Audit log details</DialogTitle>
-        <DialogDescription>
-          Review the before and after payloads captured for this record.
-        </DialogDescription>
+        <DialogTitle>{t("auditLog.detailTitle")}</DialogTitle>
+        <DialogDescription>{t("auditLog.detailDescription")}</DialogDescription>
       </DialogHeader>
 
       {log ? (
         <div className="grid gap-4 md:grid-cols-2">
-          <JsonPanel title="Dữ liệu cũ" value={payload.before} />
-          <JsonPanel title="Dữ liệu mới" value={payload.after} />
+          <JsonPanel title={t("auditLog.beforeData")} value={payload.before} />
+          <JsonPanel title={t("auditLog.afterData")} value={payload.after} />
         </div>
       ) : null}
 
       <DialogFooter>
         <Button variant="secondary" onClick={() => onOpenChange(false)}>
-          Close
+          {t("common.close")}
         </Button>
       </DialogFooter>
     </Dialog>

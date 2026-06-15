@@ -28,7 +28,7 @@ public sealed class PermissionRepository : BaseRepository<Permission>, IPermissi
     public async Task<IReadOnlyList<PermissionGroupDto>> GetGroupedAsync(CancellationToken cancellationToken = default)
     {
         var permissions = await Query()
-            .OrderBy(permission => GetPermissionGroup(permission))
+            .OrderBy(permission => permission.Key)
             .ThenBy(permission => permission.Name)
             .ToListAsync(cancellationToken);
 

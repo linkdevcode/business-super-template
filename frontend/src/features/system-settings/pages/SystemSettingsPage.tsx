@@ -1,6 +1,7 @@
 import { useEffect, type ReactElement } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import { Button } from "../../../shared/components/ui/Button";
 import { Input } from "../../../shared/components/ui/Input";
 import { HasPermission } from "../../permission";
@@ -39,6 +40,7 @@ const defaultValues: SystemSettingsFormValues = {
 
 /** Summary: System settings configuration page. */
 export function SystemSettingsPage(): ReactElement {
+  const { t } = useTranslation();
   const systemSettingsQuery = useSystemSettings(DEFAULT_SETTINGS_KEY);
   const updateSystemSettingsMutation = useUpdateSystemSettings();
 
@@ -72,22 +74,20 @@ export function SystemSettingsPage(): ReactElement {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">System Settings</h1>
-          <p className="text-sm text-muted-foreground">
-            Configure application, mail, and branding settings from a single JSON payload.
-          </p>
+          <h1 className="text-2xl font-semibold">{t("systemSettings.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("systemSettings.description")}</p>
         </div>
 
         <HasPermission permission={PERMISSION_KEYS.SystemSetting.Update}>
           <Button onClick={handleSubmit(onSubmit)} disabled={formState.isSubmitting || updateSystemSettingsMutation.isPending}>
-            Save Settings
+            {t("systemSettings.saveSettings")}
           </Button>
         </HasPermission>
       </div>
 
       {systemSettingsQuery.isLoading ? (
         <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-sm">
-          Loading system settings...
+          {t("systemSettings.loading")}
         </div>
       ) : null}
 
@@ -101,21 +101,21 @@ export function SystemSettingsPage(): ReactElement {
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="mb-4">
-              <h2 className="text-lg font-semibold">Application</h2>
-              <p className="text-sm text-muted-foreground">Main application metadata and endpoints.</p>
+              <h2 className="text-lg font-semibold">{t("systemSettings.sections.application")}</h2>
+              <p className="text-sm text-muted-foreground">{t("systemSettings.sections.applicationDescription")}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Application Name" error={formState.errors.app?.appName?.message}>
+              <Field label={t("systemSettings.fields.appName")} error={formState.errors.app?.appName?.message}>
                 <Input {...register("app.appName")} placeholder="My Super Template" />
               </Field>
-              <Field label="Time Zone" error={formState.errors.app?.timeZone?.message}>
+              <Field label={t("systemSettings.fields.timeZone")} error={formState.errors.app?.timeZone?.message}>
                 <Input {...register("app.timeZone")} placeholder="Asia/Ho_Chi_Minh" />
               </Field>
-              <Field label="Application URL" error={formState.errors.app?.appUrl?.message}>
+              <Field label={t("systemSettings.fields.appUrl")} error={formState.errors.app?.appUrl?.message}>
                 <Input {...register("app.appUrl")} placeholder="https://app.example.com" />
               </Field>
-              <Field label="API Base URL" error={formState.errors.app?.apiBaseUrl?.message}>
+              <Field label={t("systemSettings.fields.apiBaseUrl")} error={formState.errors.app?.apiBaseUrl?.message}>
                 <Input {...register("app.apiBaseUrl")} placeholder="https://api.example.com" />
               </Field>
             </div>
@@ -123,27 +123,27 @@ export function SystemSettingsPage(): ReactElement {
 
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="mb-4">
-              <h2 className="text-lg font-semibold">Mail</h2>
-              <p className="text-sm text-muted-foreground">SMTP settings used by the backend email provider.</p>
+              <h2 className="text-lg font-semibold">{t("systemSettings.sections.mail")}</h2>
+              <p className="text-sm text-muted-foreground">{t("systemSettings.sections.mailDescription")}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="SMTP Host" error={formState.errors.mail?.smtpHost?.message}>
+              <Field label={t("systemSettings.fields.smtpHost")} error={formState.errors.mail?.smtpHost?.message}>
                 <Input {...register("mail.smtpHost")} placeholder="smtp.example.com" />
               </Field>
-              <Field label="SMTP Port" error={formState.errors.mail?.smtpPort?.message}>
+              <Field label={t("systemSettings.fields.smtpPort")} error={formState.errors.mail?.smtpPort?.message}>
                 <Input type="number" {...register("mail.smtpPort", { valueAsNumber: true })} />
               </Field>
-              <Field label="SMTP Username" error={formState.errors.mail?.smtpUsername?.message}>
+              <Field label={t("systemSettings.fields.smtpUsername")} error={formState.errors.mail?.smtpUsername?.message}>
                 <Input {...register("mail.smtpUsername")} placeholder="smtp-user" />
               </Field>
-              <Field label="SMTP Password" error={formState.errors.mail?.smtpPassword?.message}>
+              <Field label={t("systemSettings.fields.smtpPassword")} error={formState.errors.mail?.smtpPassword?.message}>
                 <Input type="password" {...register("mail.smtpPassword")} placeholder="••••••••" />
               </Field>
-              <Field label="From Email" error={formState.errors.mail?.fromEmail?.message}>
+              <Field label={t("systemSettings.fields.fromEmail")} error={formState.errors.mail?.fromEmail?.message}>
                 <Input {...register("mail.fromEmail")} placeholder="hello@example.com" />
               </Field>
-              <Field label="From Name" error={formState.errors.mail?.fromName?.message}>
+              <Field label={t("systemSettings.fields.fromName")} error={formState.errors.mail?.fromName?.message}>
                 <Input {...register("mail.fromName")} placeholder="My Super Template" />
               </Field>
               <div className="flex items-center gap-3 md:col-span-2">
@@ -154,7 +154,7 @@ export function SystemSettingsPage(): ReactElement {
                   {...register("mail.enableSsl")}
                 />
                 <label htmlFor="mail.enableSsl" className="text-sm font-medium text-foreground">
-                  Enable SSL/TLS
+                  {t("systemSettings.fields.enableSsl")}
                 </label>
               </div>
             </div>
@@ -162,18 +162,18 @@ export function SystemSettingsPage(): ReactElement {
 
           <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
             <div className="mb-4">
-              <h2 className="text-lg font-semibold">Branding</h2>
-              <p className="text-sm text-muted-foreground">Public-facing visual identity and support contact.</p>
+              <h2 className="text-lg font-semibold">{t("systemSettings.sections.branding")}</h2>
+              <p className="text-sm text-muted-foreground">{t("systemSettings.sections.brandingDescription")}</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Company Name" error={formState.errors.branding?.companyName?.message}>
+              <Field label={t("systemSettings.fields.companyName")} error={formState.errors.branding?.companyName?.message}>
                 <Input {...register("branding.companyName")} placeholder="ABC Factory" />
               </Field>
-              <Field label="Support Email" error={formState.errors.branding?.supportEmail?.message}>
+              <Field label={t("systemSettings.fields.supportEmail")} error={formState.errors.branding?.supportEmail?.message}>
                 <Input {...register("branding.supportEmail")} placeholder="support@example.com" />
               </Field>
-              <Field label="Logo URL" error={formState.errors.branding?.logoUrl?.message}>
+              <Field label={t("systemSettings.fields.logoUrl")} error={formState.errors.branding?.logoUrl?.message}>
                 <Input {...register("branding.logoUrl")} placeholder="https://cdn.example.com/logo.png" />
               </Field>
             </div>

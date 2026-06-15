@@ -2,6 +2,7 @@ using Microsoft.OpenApi.Models;
 using Template.API.Middleware;
 using Template.Infrastructure;
 using Template.Infrastructure.Notifications;
+using Template.Infrastructure.Persistence.Seeding;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +66,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+await DevelopmentDataSeeder.SeedAsync(app.Services, app.Environment);
 
 if (app.Environment.IsDevelopment())
 {

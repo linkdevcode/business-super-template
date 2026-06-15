@@ -1,0 +1,232 @@
+{
+  "common": {
+    "appName": "My Super Template",
+    "appSubtitle": "Giao diện quản trị cao cấp",
+    "signOut": "Đăng xuất",
+    "admin": "Quản trị viên",
+    "signedInUser": "Người dùng đã đăng nhập",
+    "name": "Tên",
+    "status": "Trạng thái",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "description": "Mô tả",
+    "actions": "Thao tác",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "cancel": "Hủy",
+    "close": "Đóng",
+    "save": "Lưu",
+    "create": "Tạo",
+    "loading": "Đang tải...",
+    "noData": "Không có dữ liệu",
+    "permissionCount": "{{count}} quyền",
+    "noPermissions": "Không có quyền"
+  },
+  "nav": {
+    "groups": {
+      "overview": "Tổng quan",
+      "administration": "Quản trị",
+      "operations": "Vận hành"
+    },
+    "dashboard": "Bảng điều khiển",
+    "roles": "Vai trò",
+    "users": "Người dùng",
+    "permissions": "Quyền hạn",
+    "profile": "Hồ sơ",
+    "systemSettings": "Cài đặt hệ thống",
+    "auditLogs": "Nhật ký kiểm tra"
+  },
+  "layout": {
+    "expandSidebar": "Mở rộng thanh bên",
+    "collapseSidebar": "Thu gọn thanh bên",
+    "breadcrumb": "Đường dẫn",
+    "openNavigation": "Mở menu điều hướng",
+    "closeNavigation": "Đóng menu điều hướng"
+  },
+  "theme": {
+    "light": "Sáng",
+    "dark": "Tối",
+    "switchToLight": "Chuyển sang chế độ sáng",
+    "switchToDark": "Chuyển sang chế độ tối",
+    "switchTheme": "Đổi giao diện"
+  },
+  "language": {
+    "label": "Ngôn ngữ",
+    "en": "Tiếng Anh",
+    "vi": "Tiếng Việt"
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "description": "Bố cục cơ bản và khung bảng dữ liệu.",
+    "addItem": "Thêm mục",
+    "rows": {
+      "templateScaffold": "Khung mẫu",
+      "phase25": "Giai đoạn 2.5",
+      "ready": "Sẵn sàng",
+      "inProgress": "Đang tiến hành"
+    }
+  },
+  "auth": {
+    "signIn": "Đăng nhập",
+    "signInDescription": "Sử dụng tài khoản của bạn để truy cập khu vực quản trị.",
+    "login": "Đăng nhập",
+    "signingIn": "Đang đăng nhập...",
+    "unableToSignIn": "Không thể đăng nhập.",
+    "demoAccount": "Tài khoản demo:",
+    "emailPlaceholder": "ban@example.com",
+    "validation": {
+      "emailRequired": "Email là bắt buộc.",
+      "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
+      "passwordRequired": "Mật khẩu là bắt buộc."
+    }
+  },
+  "errors": {
+    "forbiddenTitle": "Không có quyền truy cập",
+    "forbiddenDescription": "Bạn không có quyền xem trang này.",
+    "notFoundTitle": "Không tìm thấy trang",
+    "notFoundDescription": "Đường dẫn yêu cầu không tồn tại.",
+    "goHome": "Về trang chủ"
+  },
+  "permissions": {
+    "title": "Quyền hạn",
+    "description": "Danh mục quyền theo nhóm dùng để gán vai trò.",
+    "loading": "Đang tải quyền hạn...",
+    "loadFailed": "Không thể tải quyền hạn."
+  },
+  "roles": {
+    "title": "Vai trò",
+    "description": "Quản lý vai trò RBAC và gán quyền hạn.",
+    "addRole": "Thêm vai trò",
+    "emptyTitle": "Không tìm thấy vai trò",
+    "emptyDescription": "Thử đổi từ khóa tìm kiếm hoặc tạo vai trò mới.",
+    "loadingRole": "Đang tải vai trò...",
+    "loadingRoleDescription": "Vui lòng đợi trong khi tải dữ liệu vai trò.",
+    "createRole": "Tạo vai trò",
+    "editRole": "Sửa vai trò",
+    "dialogDescription": "Cấu hình thông tin vai trò và gán quyền hạn.",
+    "saveChanges": "Lưu thay đổi",
+    "deleteRole": "Xóa vai trò",
+    "deleteConfirm": "Bạn có chắc muốn xóa {{name}}?",
+    "permissionsColumn": "Quyền hạn",
+    "form": {
+      "roleName": "Tên vai trò",
+      "roleNamePlaceholder": "Quản lý",
+      "descriptionPlaceholder": "Mô tả vai trò",
+      "permissionsTitle": "Quyền hạn",
+      "permissionsDescription": "Gán quyền cho vai trò bằng checkbox theo nhóm."
+    }
+  },
+  "users": {
+    "title": "Người dùng",
+    "description": "Quản lý tài khoản, trạng thái và gán vai trò.",
+    "rolesColumn": "Vai trò",
+    "lastLogin": "Đăng nhập gần nhất",
+    "neverLoggedIn": "Chưa từng",
+    "statusActive": "Hoạt động",
+    "statusInactive": "Ngưng hoạt động",
+    "allStatuses": "Tất cả trạng thái",
+    "assignRoles": "Gán vai trò",
+    "assignRolesDescription": "Chọn vai trò cho {{name}}.",
+    "saveRoles": "Lưu vai trò",
+    "noRolesAvailable": "Không có vai trò nào.",
+    "noRolesAssigned": "Chưa gán vai trò",
+    "activate": "Kích hoạt",
+    "deactivate": "Vô hiệu hóa",
+    "emptyTitle": "Không tìm thấy người dùng",
+    "emptyDescription": "Thử đổi từ khóa tìm kiếm hoặc bộ lọc trạng thái."
+  },
+  "profile": {
+    "title": "Hồ sơ cá nhân",
+    "description": "Quản lý thông tin cá nhân và bảo mật tài khoản.",
+    "accountInfo": "Thông tin tài khoản",
+    "accountInfoDescription": "Cập nhật tên hiển thị và ảnh đại diện.",
+    "roles": "Vai trò",
+    "saveProfile": "Lưu hồ sơ",
+    "updateSuccess": "Cập nhật hồ sơ thành công.",
+    "changePassword": "Đổi mật khẩu",
+    "changePasswordDescription": "Sử dụng mật khẩu mạnh với ít nhất 8 ký tự.",
+    "currentPassword": "Mật khẩu hiện tại",
+    "newPassword": "Mật khẩu mới",
+    "confirmPassword": "Xác nhận mật khẩu mới",
+    "updatePassword": "Cập nhật mật khẩu",
+    "passwordSuccess": "Đổi mật khẩu thành công.",
+    "passwordError": "Không thể đổi mật khẩu."
+  },
+  "systemSettings": {
+    "title": "Cài đặt hệ thống",
+    "description": "Cấu hình ứng dụng, email và thương hiệu từ một payload JSON.",
+    "saveSettings": "Lưu cài đặt",
+    "loading": "Đang tải cài đặt hệ thống...",
+    "sections": {
+      "application": "Ứng dụng",
+      "applicationDescription": "Thông tin và endpoint chính của ứng dụng.",
+      "mail": "Email",
+      "mailDescription": "Cấu hình SMTP dùng bởi nhà cung cấp email backend.",
+      "branding": "Thương hiệu",
+      "brandingDescription": "Nhận diện thương hiệu và thông tin hỗ trợ."
+    },
+    "fields": {
+      "appName": "Tên ứng dụng",
+      "timeZone": "Múi giờ",
+      "appUrl": "URL ứng dụng",
+      "apiBaseUrl": "URL API",
+      "smtpHost": "Máy chủ SMTP",
+      "smtpPort": "Cổng SMTP",
+      "smtpUsername": "Tên đăng nhập SMTP",
+      "smtpPassword": "Mật khẩu SMTP",
+      "fromEmail": "Email gửi",
+      "fromName": "Tên người gửi",
+      "enableSsl": "Bật SSL/TLS",
+      "companyName": "Tên công ty",
+      "supportEmail": "Email hỗ trợ",
+      "logoUrl": "URL logo"
+    }
+  },
+  "auditLog": {
+    "title": "Nhật ký kiểm tra",
+    "description": "Xem lịch sử với bộ lọc theo bảng, người dùng và hành động.",
+    "clearFilters": "Xóa bộ lọc",
+    "tableName": "Tên bảng",
+    "userId": "ID người dùng",
+    "userIdHint": "Nhập UUID hợp lệ để lọc theo người thực hiện.",
+    "action": "Hành động",
+    "allActions": "Tất cả hành động",
+    "actions": {
+      "create": "Tạo",
+      "update": "Cập nhật",
+      "delete": "Xóa"
+    },
+    "columns": {
+      "table": "Bảng",
+      "recordId": "ID bản ghi",
+      "action": "Hành động",
+      "userId": "ID người dùng",
+      "createdAt": "Thời gian tạo"
+    },
+    "emptyTitle": "Không có nhật ký",
+    "emptyDescription": "Thử nới rộng bộ lọc hoặc xóa các trường tìm kiếm.",
+    "detailTitle": "Chi tiết nhật ký",
+    "detailDescription": "Xem dữ liệu trước và sau khi thay đổi được ghi lại.",
+    "beforeData": "Dữ liệu cũ",
+    "afterData": "Dữ liệu mới"
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "description": "Hoạt động mới nhất của tài khoản bạn",
+    "markAllRead": "Đánh dấu đã đọc tất cả",
+    "loadFailed": "Không thể tải thông báo.",
+    "loadingMore": "Đang tải thêm...",
+    "scrollToLoadMore": "Cuộn để tải thêm",
+    "endReached": "Bạn đã xem hết thông báo.",
+    "empty": "Chưa có thông báo."
+  },
+  "dataTable": {
+    "search": "Tìm kiếm...",
+    "noRecords": "Không có bản ghi",
+    "noRecordsDescription": "Thử điều chỉnh bộ lọc hoặc tạo bản ghi mới.",
+    "previous": "Trước",
+    "next": "Sau",
+    "pageOf": "Trang {{current}} / {{total}}",
+    "perPage": "{{size}} / trang"
+  }
+}

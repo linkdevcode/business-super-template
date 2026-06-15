@@ -9,6 +9,7 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import { LogoutPage } from "./pages/LogoutPage";
 import { PermissionsPage } from "../features/permission";
 import { RolesPage } from "../features/role";
+import { UsersPage, ProfilePage } from "../features/user";
 import { AuditLogViewerPage } from "../features/audit-log";
 import { SystemSettingsPage } from "../features/system-settings";
 import { PERMISSION_KEYS } from "../features/permission";
@@ -42,6 +43,10 @@ export function AppRouter(): ReactElement {
             <Route element={<PermissionProtectedRoute permission={PERMISSION_KEYS.Role.Read} />}>
               <Route path="/roles" element={<RolesPage />} />
             </Route>
+            <Route element={<PermissionProtectedRoute permission={PERMISSION_KEYS.User.Read} />}>
+              <Route path="/users" element={<UsersPage />} />
+            </Route>
+            <Route path="/profile" element={<ProfilePage />} />
             <Route element={<PermissionProtectedRoute permission={PERMISSION_KEYS.SystemSetting.Read} />}>
               <Route path="/system-settings" element={<SystemSettingsPage />} />
             </Route>

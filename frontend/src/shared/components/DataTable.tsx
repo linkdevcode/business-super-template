@@ -7,6 +7,7 @@ import {
   type OnChangeFn,
   type SortingState,
 } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./ui/Table";
@@ -47,10 +48,14 @@ export function DataTable<TData>({
   onSortingChange,
   onPageIndexChange,
   onPageSizeChange,
-  emptyTitle = "No records found",
-  emptyDescription = "Try adjusting your filters or create a new record to get started.",
+  emptyTitle,
+  emptyDescription,
   emptyAction = null,
 }: DataTableProps<TData>): ReactElement {
+  const { t } = useTranslation();
+  const resolvedEmptyTitle = emptyTitle ?? t("dataTable.noRecords");
+  const resolvedEmptyDescription = emptyDescription ?? t("dataTable.noRecordsDescription");
+
   const table = useReactTable({
     data,
     columns,
@@ -73,12 +78,12 @@ export function DataTable<TData>({
   return (
     <div className="space-y-4">
       {onSearchValueChange ? (
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-3">
           <Input
             value={searchValue ?? ""}
             onChange={(event) => onSearchValueChange(event.target.value)}
-            placeholder="Search..."
-            className="max-w-sm bg-card"
+            placeholder={t("dataTable.search")}
+            className="w-full bg-card sm:max-w-sm"
           />
         </div>
       ) : null}
@@ -127,8 +132,8 @@ export function DataTable<TData>({
             <TableRow>
               <TableCell colSpan={columns.length} className="p-6">
                 <EmptyState
-                  title={emptyTitle}
-                  description={emptyDescription}
+                  title={resolvedEmptyTitle}
+                  description={resolvedEmptyDescription}
                   action={emptyAction}
                   className="border-0 bg-transparent px-0 py-0 shadow-none"
                 />
@@ -139,18 +144,18 @@ export function DataTable<TData>({
       </Table>
 
       {onPageIndexChange || onPageSizeChange ? (
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm text-muted-foreground">
-            Page {pageIndex + 1} of {Math.max(pageCount, 1)}
+            {t("dataTable.pageOf", { current: pageIndex + 1, total: Math.max(pageCount, 1) })}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {onPageIndexChange ? (
               <Button
                 variant="secondary"
                 onClick={() => onPageIndexChange(Math.max(pageIndex - 1, 0))}
                 disabled={pageIndex <= 0}
               >
-                Previous
+                {t("dataTable.previous")}
               </Button>
             ) : null}
             {onPageIndexChange ? (
@@ -159,7 +164,7 @@ export function DataTable<TData>({
                 onClick={() => onPageIndexChange(pageIndex + 1)}
                 disabled={pageIndex + 1 >= pageCount}
               >
-                Next
+                {t("dataTable.next")}
               </Button>
             ) : null}
             {onPageSizeChange ? (
@@ -170,7 +175,7 @@ export function DataTable<TData>({
               >
                 {[10, 20, 50, 100].map((size) => (
                   <option key={size} value={size}>
-                    {size} / page
+                    {t("dataTable.perPage", { size })}
                   </option>
                 ))}
               </select>

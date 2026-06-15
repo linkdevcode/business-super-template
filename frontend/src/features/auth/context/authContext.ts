@@ -9,6 +9,7 @@ export type AuthContextState = {
   login: (input: LoginInput) => Promise<AuthSessionDto>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<AuthSessionDto>;
+  refreshCurrentUser: () => Promise<AuthUserDto>;
   clearSession: () => void;
   hasPermission: (permission: string) => boolean;
   hasRole: (role: string) => boolean;

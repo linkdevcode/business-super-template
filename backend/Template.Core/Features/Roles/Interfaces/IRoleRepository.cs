@@ -21,4 +21,7 @@ public interface IRoleRepository : IBaseRepository<Role>
 
     /// <summary>Checks whether a role name already exists.</summary>
     Task<bool> ExistsByNameAsync(string name, Guid? excludeId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>Gets roles by identifiers.</summary>
+    Task<IReadOnlyList<Role>> GetByIdsAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken = default);
 }

@@ -400,6 +400,12 @@ namespace Template.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_login_at");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("password_hash");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)

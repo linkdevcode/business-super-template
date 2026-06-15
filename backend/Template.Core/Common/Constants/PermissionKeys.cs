@@ -19,6 +19,16 @@ public static class PermissionKeys
         public const string Delete = "Role.Delete";
     }
 
+    /// <summary>User-related permissions.</summary>
+    public static class User
+    {
+        /// <summary>Permission to view users.</summary>
+        public const string Read = "User.Read";
+
+        /// <summary>Permission to update users.</summary>
+        public const string Update = "User.Update";
+    }
+
     /// <summary>Permission-related permissions.</summary>
     public static class Permission
     {

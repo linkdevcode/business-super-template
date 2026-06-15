@@ -9,6 +9,7 @@ using Template.Core.Features.AuditLogs;
 using Template.Core.Features.Notifications;
 using Template.Core.Features.Permissions;
 using Template.Core.Features.Roles;
+using Template.Core.Features.Users;
 using Template.Infrastructure.Auth;
 using Template.Infrastructure.Features.FileManagement.Repositories;
 using Template.Infrastructure.Features.SystemSettings.Repositories;
@@ -20,6 +21,7 @@ using Template.Infrastructure.Persistence;
 using Template.Infrastructure.Persistence.Repositories;
 using Template.Infrastructure.Features.Permissions.Repositories;
 using Template.Infrastructure.Features.Roles.Repositories;
+using Template.Infrastructure.Features.Users.Repositories;
 
 namespace Template.Infrastructure;
 
@@ -48,6 +50,7 @@ public static class DependencyInjection
         services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
@@ -65,6 +68,13 @@ public static class DependencyInjection
         services.AddScoped<UpdateRoleHandler>();
         services.AddScoped<DeleteRoleHandler>();
         services.AddScoped<GetPermissionsHandler>();
+        services.AddScoped<GetUsersHandler>();
+        services.AddScoped<GetUserByIdHandler>();
+        services.AddScoped<UpdateUserStatusHandler>();
+        services.AddScoped<AssignUserRolesHandler>();
+        services.AddScoped<GetProfileHandler>();
+        services.AddScoped<UpdateProfileHandler>();
+        services.AddScoped<ChangePasswordHandler>();
         services.AddScoped<UploadFileHandler>();
         services.AddScoped<GetFileHandler>();
         services.AddScoped<DeleteFileHandler>();

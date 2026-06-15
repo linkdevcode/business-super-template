@@ -118,6 +118,19 @@
   - [x] Viết route guard cho `ProtectedRoute`, `PublicRoute`.
   - [x] Dùng `axiosClient` để gắn access token và refresh tự động.
 
+### 3.1.1. User Management & Profile
+
+- [x] **Backend**
+  - [x] API danh sách Users phân trang, tìm kiếm, lọc trạng thái (`User.Read`).
+  - [x] API cập nhật trạng thái User Active/Inactive và gán Role (`User.Update`).
+  - [x] API `UpdateProfileCommand` và `ChangePasswordCommand` (BCrypt) cho người dùng hiện tại.
+  - [x] Bổ sung `User.Read` / `User.Update` vào seeder và `AuthUserDto.AvatarUrl`.
+- [x] **Frontend**
+  - [x] Menu sidebar "Người dùng" trong nhóm Quản trị (dưới Vai trò).
+  - [x] Trang quản lý người dùng với `<DataTable />`, badge trạng thái, gán vai trò nhanh.
+  - [x] Trang Hồ sơ cá nhân với `<AvatarUploader />`, cập nhật thông tin và đổi mật khẩu.
+  - [x] Liên kết "Hồ sơ" từ dropdown Header điều hướng tới `/profile`.
+
 ### 3.2. Module Role & Permission (RBAC & CRUD Pattern Standard)
 - [x] **Backend**
   - [x] Tạo feature slices riêng cho `Role` và `Permission` trong `Template.Core`, `Template.Infrastructure`, `Template.API`.

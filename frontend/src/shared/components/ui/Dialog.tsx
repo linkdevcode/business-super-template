@@ -27,13 +27,13 @@ export function Dialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 p-3 backdrop-blur-sm sm:items-center sm:p-4"
       role="presentation"
       onClick={() => onOpenChange(false)}
     >
       <div
         className={[
-          "w-full max-w-lg rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-2xl",
+          "max-h-[min(90vh,100%)] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-2xl sm:p-6",
           contentClassName,
         ]
           .filter(Boolean)
@@ -66,7 +66,7 @@ export function DialogDescription({ children }: DialogSectionProps): ReactElemen
 
 /** Summary: Dialog footer area. */
 export function DialogFooter({ children }: DialogSectionProps): ReactElement {
-  return <div className="mt-6 flex justify-end gap-2">{children}</div>;
+  return <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">{children}</div>;
 }
 
 /** Summary: Default cancel action for dialogs. */

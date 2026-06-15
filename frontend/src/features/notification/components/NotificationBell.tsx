@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
+import { Bell } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../../../shared/components/ui/Button";
 import { useAuth } from "../../auth";
 import { useMarkAllNotificationsAsRead, useMarkNotificationAsRead, useNotifications } from "../hooks/useNotifications";
@@ -10,11 +12,7 @@ function formatNotificationTime(value: string): string {
 }
 
 function NotificationIcon(): ReactElement {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-current">
-      <path d="M12 22a2.5 2.5 0 0 0 2.45-2H9.55A2.5 2.5 0 0 0 12 22Zm8-6v-5.5a8 8 0 1 0-16 0V16l-1.7 1.7A1 1 0 0 0 3 19h18a1 1 0 0 0 .7-1.7L20 16Z" />
-    </svg>
-  );
+  return <Bell size={20} strokeWidth={1.75} aria-hidden="true" />;
 }
 
 type NotificationItemProps = {
@@ -66,6 +64,7 @@ function NotificationItem({ notification, onRead }: NotificationItemProps): Reac
 }
 
 export function NotificationBell(): ReactElement {
+  const { t } = useTranslation();
   const { currentUser, isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -150,40 +149,40 @@ export function NotificationBell(): ReactElement {
     <div ref={containerRef} className="relative">
       <Button
         variant="secondary"
-        aria-label="Notifications"
+        aria-label={t("notifications.title")}
         aria-expanded={isOpen}
         onClick={toggleOpen}
-        className="relative h-10 w-10 rounded-full px-0"
+        className="relative h-11 w-11 rounded-full border border-border/60 bg-card px-0 text-muted-foreground shadow-sm transition-all duration-200 hover:bg-muted/60 hover:text-foreground hover:shadow-md"
       >
         <NotificationIcon />
         {unreadCount > 0 ? (
-          <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[10px] font-semibold text-destructive-foreground">
+          <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 py-0.5 text-[11px] font-semibold text-destructive-foreground ring-2 ring-background">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}
       </Button>
 
       {isOpen ? (
-        <div className="absolute right-0 top-12 z-50 w-[22rem] rounded-2xl border border-border bg-popover shadow-2xl">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <div>
-              <p className="text-sm font-semibold text-foreground">Notifications</p>
-              <p className="text-xs text-muted-foreground">Latest activity for your account</p>
+        <div className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-1.5rem))] rounded-2xl border border-border bg-popover shadow-2xl">
+          <div className="flex flex-col gap-2 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground">{t("notifications.title")}</p>
+              <p className="text-xs text-muted-foreground">{t("notifications.description")}</p>
             </div>
             <Button
               variant="ghost"
-              className="h-8 px-2 text-xs"
+              className="h-8 shrink-0 self-start px-2 text-xs sm:self-auto"
               onClick={handleMarkAllAsRead}
               disabled={unreadCount === 0 || isBusy}
             >
-              Mark all as read
+              {t("notifications.markAllRead")}
             </Button>
           </div>
 
           <div ref={scrollContainerRef} className="max-h-[28rem] overflow-y-auto p-3">
             {notificationsQuery.isError ? (
               <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-                Failed to load notifications.
+                {t("notifications.loadFailed")}
               </div>
             ) : notificationsQuery.isLoading ? (
               <div className="space-y-2">
@@ -197,16 +196,16 @@ export function NotificationBell(): ReactElement {
                 ))}
                 <div ref={sentinelRef} className="h-6" aria-hidden="true" />
                 {notificationsQuery.isFetchingNextPage ? (
-                  <p className="pb-1 text-center text-xs text-muted-foreground">Loading more...</p>
+                  <p className="pb-1 text-center text-xs text-muted-foreground">{t("notifications.loadingMore")}</p>
                 ) : notificationsQuery.hasNextPage ? (
-                  <p className="pb-1 text-center text-xs text-muted-foreground">Scroll to load more</p>
+                  <p className="pb-1 text-center text-xs text-muted-foreground">{t("notifications.scrollToLoadMore")}</p>
                 ) : (
-                  <p className="pb-1 text-center text-xs text-muted-foreground">You have reached the end.</p>
+                  <p className="pb-1 text-center text-xs text-muted-foreground">{t("notifications.endReached")}</p>
                 )}
               </div>
             ) : (
               <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-                No notifications yet.
+                {t("notifications.empty")}
               </div>
             )}
           </div>

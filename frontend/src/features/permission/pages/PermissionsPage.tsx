@@ -1,24 +1,26 @@
 import type { ReactElement } from "react";
+import { useTranslation } from "react-i18next";
 import { usePermissions } from "../hooks/usePermissions";
 
 /** Summary: Shows the grouped permission catalog. */
 export function PermissionsPage(): ReactElement {
+  const { t } = useTranslation();
   const { data, isLoading, isError } = usePermissions();
 
   return (
     <section className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Permissions</h1>
-        <p className="text-sm text-muted-foreground">Grouped permission catalog used by role assignments.</p>
+        <h1 className="text-2xl font-semibold">{t("permissions.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("permissions.description")}</p>
       </div>
 
       {isLoading ? (
         <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-sm">
-          Loading permissions...
+          {t("permissions.loading")}
         </div>
       ) : isError ? (
         <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-6 text-sm text-destructive">
-          Failed to load permissions.
+          {t("permissions.loadFailed")}
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">

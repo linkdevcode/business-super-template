@@ -1,0 +1,232 @@
+{
+  "common": {
+    "appName": "My Super Template",
+    "appSubtitle": "Premium admin shell",
+    "signOut": "Sign out",
+    "admin": "Admin",
+    "signedInUser": "Signed in user",
+    "name": "Name",
+    "status": "Status",
+    "email": "Email",
+    "password": "Password",
+    "description": "Description",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "create": "Create",
+    "loading": "Loading...",
+    "noData": "No data",
+    "permissionCount": "{{count}} permission(s)",
+    "noPermissions": "No permissions"
+  },
+  "nav": {
+    "groups": {
+      "overview": "Overview",
+      "administration": "Administration",
+      "operations": "Operations"
+    },
+    "dashboard": "Dashboard",
+    "roles": "Roles",
+    "users": "Users",
+    "permissions": "Permissions",
+    "profile": "Profile",
+    "systemSettings": "System Settings",
+    "auditLogs": "Audit Logs"
+  },
+  "layout": {
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "breadcrumb": "Breadcrumb",
+    "openNavigation": "Open navigation",
+    "closeNavigation": "Close navigation"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "switchTheme": "Switch theme"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "vi": "Vietnamese"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Base layout and table scaffold.",
+    "addItem": "Add item",
+    "rows": {
+      "templateScaffold": "Template scaffold",
+      "phase25": "Phase 2.5",
+      "ready": "Ready",
+      "inProgress": "In progress"
+    }
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signInDescription": "Use your account to access the admin area.",
+    "login": "Login",
+    "signingIn": "Signing in...",
+    "unableToSignIn": "Unable to sign in.",
+    "demoAccount": "Demo account:",
+    "emailPlaceholder": "you@example.com",
+    "validation": {
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Password is required."
+    }
+  },
+  "errors": {
+    "forbiddenTitle": "Forbidden",
+    "forbiddenDescription": "You do not have permission to view this page.",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "The requested route does not exist.",
+    "goHome": "Go home"
+  },
+  "permissions": {
+    "title": "Permissions",
+    "description": "Grouped permission catalog used by role assignments.",
+    "loading": "Loading permissions...",
+    "loadFailed": "Failed to load permissions."
+  },
+  "roles": {
+    "title": "Roles",
+    "description": "Manage RBAC roles and assign permissions.",
+    "addRole": "Add Role",
+    "emptyTitle": "No roles found",
+    "emptyDescription": "Try changing the search term or create a new role.",
+    "loadingRole": "Loading role...",
+    "loadingRoleDescription": "Please wait while we load role data.",
+    "createRole": "Create Role",
+    "editRole": "Edit Role",
+    "dialogDescription": "Configure the role information and assign permissions.",
+    "saveChanges": "Save Changes",
+    "deleteRole": "Delete role",
+    "deleteConfirm": "Are you sure you want to delete {{name}}?",
+    "permissionsColumn": "Permissions",
+    "form": {
+      "roleName": "Role name",
+      "roleNamePlaceholder": "Managers",
+      "descriptionPlaceholder": "Role description",
+      "permissionsTitle": "Permissions",
+      "permissionsDescription": "Assign permissions to the role using grouped checkboxes."
+    }
+  },
+  "users": {
+    "title": "Users",
+    "description": "Manage user accounts, status, and role assignments.",
+    "rolesColumn": "Roles",
+    "lastLogin": "Last login",
+    "neverLoggedIn": "Never",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "allStatuses": "All statuses",
+    "assignRoles": "Assign roles",
+    "assignRolesDescription": "Select roles for {{name}}.",
+    "saveRoles": "Save roles",
+    "noRolesAvailable": "No roles available.",
+    "noRolesAssigned": "No roles assigned",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "emptyTitle": "No users found",
+    "emptyDescription": "Try changing the search term or status filter."
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Manage your personal information and account security.",
+    "accountInfo": "Account information",
+    "accountInfoDescription": "Update your display name and avatar.",
+    "roles": "Roles",
+    "saveProfile": "Save profile",
+    "updateSuccess": "Profile updated successfully.",
+    "changePassword": "Change password",
+    "changePasswordDescription": "Use a strong password with at least 8 characters.",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "updatePassword": "Update password",
+    "passwordSuccess": "Password changed successfully.",
+    "passwordError": "Unable to change password."
+  },
+  "systemSettings": {
+    "title": "System Settings",
+    "description": "Configure application, mail, and branding settings from a single JSON payload.",
+    "saveSettings": "Save Settings",
+    "loading": "Loading system settings...",
+    "sections": {
+      "application": "Application",
+      "applicationDescription": "Main application metadata and endpoints.",
+      "mail": "Mail",
+      "mailDescription": "SMTP settings used by the backend email provider.",
+      "branding": "Branding",
+      "brandingDescription": "Public-facing visual identity and support contact."
+    },
+    "fields": {
+      "appName": "Application Name",
+      "timeZone": "Time Zone",
+      "appUrl": "Application URL",
+      "apiBaseUrl": "API Base URL",
+      "smtpHost": "SMTP Host",
+      "smtpPort": "SMTP Port",
+      "smtpUsername": "SMTP Username",
+      "smtpPassword": "SMTP Password",
+      "fromEmail": "From Email",
+      "fromName": "From Name",
+      "enableSsl": "Enable SSL/TLS",
+      "companyName": "Company Name",
+      "supportEmail": "Support Email",
+      "logoUrl": "Logo URL"
+    }
+  },
+  "auditLog": {
+    "title": "Audit Log Viewer",
+    "description": "Review history with filters by table name, user, and action.",
+    "clearFilters": "Clear Filters",
+    "tableName": "Table Name",
+    "userId": "User ID",
+    "userIdHint": "Enter a valid UUID to filter by actor.",
+    "action": "Action",
+    "allActions": "All actions",
+    "actions": {
+      "create": "Create",
+      "update": "Update",
+      "delete": "Delete"
+    },
+    "columns": {
+      "table": "Table",
+      "recordId": "Record ID",
+      "action": "Action",
+      "userId": "User ID",
+      "createdAt": "Created At"
+    },
+    "emptyTitle": "No audit logs found",
+    "emptyDescription": "Try widening the filters or clear the search fields.",
+    "detailTitle": "Audit log details",
+    "detailDescription": "Review the before and after payloads captured for this record.",
+    "beforeData": "Before data",
+    "afterData": "After data"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Latest activity for your account",
+    "markAllRead": "Mark all as read",
+    "loadFailed": "Failed to load notifications.",
+    "loadingMore": "Loading more...",
+    "scrollToLoadMore": "Scroll to load more",
+    "endReached": "You have reached the end.",
+    "empty": "No notifications yet."
+  },
+  "dataTable": {
+    "search": "Search...",
+    "noRecords": "No records found",
+    "noRecordsDescription": "Try adjusting your filters or create a new record to get started.",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{current}} of {{total}}",
+    "perPage": "{{size}} / page"
+  }
+}

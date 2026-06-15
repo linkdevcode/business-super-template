@@ -8,6 +8,9 @@ public class User : BaseEntity
     /// <summary>Gets or sets the unique email address.</summary>
     public string Email { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the BCrypt password hash. Never store plain text passwords.</summary>
+    public string PasswordHash { get; set; } = string.Empty;
+
     /// <summary>Gets or sets the display name.</summary>
     public string FullName { get; set; } = string.Empty;
 

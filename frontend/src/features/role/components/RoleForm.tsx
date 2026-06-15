@@ -1,6 +1,7 @@
 import { useMemo, type ReactElement } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 import type { z } from "zod";
 import { Button } from "../../../shared/components/ui/Button";
 import { Input } from "../../../shared/components/ui/Input";
@@ -23,6 +24,7 @@ export function RoleForm({
   submitLabel,
   onSubmit,
 }: RoleFormProps): ReactElement {
+  const { t } = useTranslation();
   const normalizedDefaults = useMemo<RoleFormValues>(
     () => ({
       name: defaultValues?.name ?? "",
@@ -60,25 +62,25 @@ export function RoleForm({
       <div className="space-y-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="name">
-            Role name
+            {t("roles.form.roleName")}
           </label>
-          <Input id="name" {...register("name")} placeholder="Managers" />
+          <Input id="name" {...register("name")} placeholder={t("roles.form.roleNamePlaceholder")} />
           {errors.name ? <p className="mt-1 text-sm text-destructive">{errors.name.message}</p> : null}
         </div>
 
         <div>
           <label className="mb-1 block text-sm font-medium text-foreground" htmlFor="description">
-            Description
+            {t("common.description")}
           </label>
-          <Input id="description" {...register("description")} placeholder="Role description" />
+          <Input id="description" {...register("description")} placeholder={t("roles.form.descriptionPlaceholder")} />
           {errors.description ? <p className="mt-1 text-sm text-destructive">{errors.description.message}</p> : null}
         </div>
       </div>
 
       <div>
         <div className="mb-3">
-          <h3 className="text-sm font-medium text-foreground">Permissions</h3>
-          <p className="text-xs text-muted-foreground">Assign permissions to the role using grouped checkboxes.</p>
+          <h3 className="text-sm font-medium text-foreground">{t("roles.form.permissionsTitle")}</h3>
+          <p className="text-xs text-muted-foreground">{t("roles.form.permissionsDescription")}</p>
         </div>
         <PermissionTree
           permissionGroups={permissionGroups}
