@@ -194,18 +194,14 @@
 
 ---
 
-## Phase 4: Đóng gói Template & Kiểm tra Deploy (0đ)
+## Phase 4: Đóng gói Hạ tầng & Đảm bảo Tiêu chuẩn Production-Ready
 
-- [ ] **Backend deployment**
-  - [ ] Viết `Dockerfile` đa tầng cho Backend `.NET 9`.
-  - [ ] Cấu hình port, health check `/health`, và biến môi trường runtime.
-  - [ ] Bảo đảm backend bootstrap theo đúng thứ tự.
-- [ ] **Frontend deployment**
-  - [ ] Tạo luồng build production cho Vite SPA.
-  - [ ] Rà lại `import.meta.env` và các biến `VITE_*`.
-- [ ] **CI/CD**
-  - [ ] Viết file cấu hình GitHub Actions cho pipeline build/test/lint/deploy.
-- [ ] **Zero-cost deploy validation**
-  - [ ] Deploy thử nghiệm FE lên Vercel hoặc Netlify.
-  - [ ] Deploy thử nghiệm BE lên Render hoặc Railway bằng Docker.
-  - [ ] Xác minh ứng dụng chạy end-to-end.
+- [x] **Backend Containerization**
+  - [x] Viết `Dockerfile` đa tầng (Multi-stage) tối ưu dung lượng cho Backend `.NET 9`.
+  - [x] Cấu hình endpoint kiểm tra sức khỏe hệ thống `/health` trong `Program.cs` để phục vụ các hạ tầng container sau này.
+- [x] **Frontend Production Build Check**
+  - [x] Chạy thử nghiệm luồng build production cho Vite SPA (`npm run build`) nhằm rà soát và triệt tiêu toàn bộ lỗi biên dịch TypeScript.
+  - [x] Chuẩn hóa file `.env.example` và `.env.production` mẫu, đảm bảo các biến `VITE_*` được bóc tách đúng chuẩn ngữ nghĩa.
+- [x] **Local End-to-End Validation**
+  - [x] Khởi chạy toàn bộ hệ thống (FE + BE + DB + PGAdmin + Supabase Storage) thông qua Docker Compose local.
+  - [x] Xác minh mọi luồng cốt lõi (Auth, RBAC, Upload File, Real-time Notification, Quản lý User) chạy đồng bộ, không phát sinh lỗi nghẽn cổ chai.
